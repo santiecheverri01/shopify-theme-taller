@@ -1584,7 +1584,7 @@
         "step": 20,
         "unit": "px",
         "label": "📏 Altura mínima del popup",
-        "default": 280,
+        "default": 320,
         "info": "Altura mínima para que la imagen se vea proporcionada"
       },
       {
