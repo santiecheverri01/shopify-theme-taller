@@ -747,22 +747,26 @@ class PopupNewsletter {
 function initPopup() {
   console.log('🚀 Iniciando Popup Newsletter...');
   
+  // Esperar a que las configuraciones estén disponibles
+  if (typeof window.popupNewsletterSettings === 'undefined') {
+    console.log('⏳ Esperando configuraciones del popup...');
+    setTimeout(initPopup, 500);
+    return;
+  }
+  
   // Verificar si el popup está habilitado antes de continuar
-  if (typeof window.popupNewsletterSettings !== 'undefined' && 
-      window.popupNewsletterSettings.enabled === false) {
+  if (window.popupNewsletterSettings.enabled === false) {
     console.log('🚫 Popup Newsletter deshabilitado desde configuración del tema');
+    console.log('🔧 Estado enabled:', window.popupNewsletterSettings.enabled);
     return;
   }
   
   const popup = document.getElementById('popup-newsletter');
   if (popup) {
     console.log('📋 Elemento popup-newsletter encontrado');
-    console.log('🔧 Configuraciones globales disponibles:', typeof window.popupNewsletterSettings !== 'undefined' ? 'SÍ' : 'NO');
-    
-    if (typeof window.popupNewsletterSettings !== 'undefined') {
-      console.log('⚙️ Configuraciones actuales:', window.popupNewsletterSettings);
-      console.log('✅ Popup habilitado:', window.popupNewsletterSettings.enabled !== false);
-    }
+    console.log('🔧 Configuraciones globales disponibles: SÍ');
+    console.log('⚙️ Configuraciones actuales:', window.popupNewsletterSettings);
+    console.log('✅ Popup habilitado:', window.popupNewsletterSettings.enabled !== false);
     
     new PopupNewsletter();
     console.log('✅ Popup Newsletter inicializado correctamente');
@@ -784,20 +788,25 @@ if (document.readyState !== 'loading') {
 window.debugPopupSettings = function() {
   console.log('🔧 DEBUG: Información del popup newsletter');
   console.log('📋 Elemento popup existe:', !!document.getElementById('popup-newsletter'));
+  console.log('⚙️ Configuraciones globales definidas:', typeof window.popupNewsletterSettings !== 'undefined');
   console.log('⚙️ Configuraciones globales:', window.popupNewsletterSettings);
-  console.log('✅ Popup habilitado:', window.popupNewsletterSettings?.enabled !== false);
+  console.log('🔧 Estado enabled específico:', window.popupNewsletterSettings?.enabled);
+  console.log('✅ Popup habilitado (lógica):', window.popupNewsletterSettings?.enabled !== false);
   console.log('🔗 Instancia global:', !!window.popupNewsletterInstance);
   
   if (window.popupNewsletterSettings?.enabled === false) {
     console.log('🚫 El popup está deshabilitado desde la configuración del tema');
+    console.log('🔧 Para habilitarlo, ve a: Configuración del tema > Popup Newsletter > Control General > Activar popup newsletter');
     return;
   }
   
   if (window.popupNewsletterInstance) {
     console.log('🔄 Re-aplicando configuraciones...');
-    window.popupNewsletterInstance.applyDynamicSettings();
+    window.popupNewsletterInstance.applyDynamicSettings(window.popupNewsletterSettings);
   } else {
     console.warn('⚠️ No hay instancia del popup disponible');
+    console.log('🔄 Intentando reinicializar...');
+    initPopup();
   }
 };
 
@@ -814,4 +823,17 @@ window.showPopupForTesting = function() {
   } else {
     console.warn('⚠️ No hay instancia del popup disponible');
   }
+};
+
+// Función para reinicializar completamente el popup
+window.reinitializePopup = function() {
+  console.log('🔄 Reinicializando popup completamente...');
+  
+  // Limpiar instancia existente
+  if (window.popupNewsletterInstance) {
+    window.popupNewsletterInstance = null;
+  }
+  
+  // Forzar reinicialización
+  initPopup();
 };
