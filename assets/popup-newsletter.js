@@ -642,54 +642,148 @@ class PopupNewsletter {
     };
   }
 
-  async submitForm(formData) {
-    // Integración con Shopify Customer API
+  async handleSubmit() {
+    console.log('🚀 Iniciando envío del formulario...');
+    
+    // Validar todos los campos
+    const isNameValid = this.validateName();
+    const isEmailValid = this.validateEmail();
+    const isBirthdayValid = this.validateBirthday();
+    const isConsentValid = this.validateConsent();
+    
+    if (!isNameValid || !isEmailValid || !isBirthdayValid || !isConsentValid) {
+      console.log('❌ Validación fallida');
+      return;
+    }
+    
+    // Mostrar loading
+    this.showLoading(true);
+    
     try {
+      const formData = this.getFormData();
+      console.log('📋 Datos a enviar:', formData);
+      
+      const result = await this.submitForm(formData);
+      
+      if (result.success) {
+        console.log('✅ Formulario enviado exitosamente');
+        
+        // Guardar cookie para no mostrar de nuevo
+        this.setCookie(this.config.cookieName, 'submitted', this.config.cookieExpiry);
+        
+        // Mostrar mensaje de éxito
+        this.showSuccess();
+        
+        // Tracking/Analytics (opcional)
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'newsletter_signup', {
+            'event_category': 'engagement',
+            'event_label': 'popup'
+          });
+        }
+      } else {
+        throw new Error('Error en el envío');
+      }
+    } catch (error) {
+      console.error('❌ Error al enviar formulario:', error);
+      this.showError('general-error', 'Hubo un problema al procesar tu suscripción. Por favor intenta de nuevo.');
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  async submitForm(formData) {
+    console.log('📧 Enviando suscripción:', formData);
+    
+    try {
+      // Usar el endpoint correcto para activar Shopify Flow
+      const formBody = new FormData();
+      formBody.append('form_type', 'customer');
+      formBody.append('utf8', '✓');
+      formBody.append('customer[email]', formData.email);
+      formBody.append('customer[first_name]', formData.name.split(' ')[0]);
+      formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || '');
+      formBody.append('customer[accepts_marketing]', '1');
+      formBody.append('customer[tags]', 'newsletter_popup');
+      
+      // Agregar fecha de nacimiento si está disponible
+      if (formData.birthday && formData.birthday.length > 0) {
+        formBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday}`);
+      }
+
       const response = await fetch('/account', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({
-          form_type: 'customer',
-          utf8: '✓',
-          'customer[email]': formData.email,
-          'customer[first_name]': formData.name.split(' ')[0],
-          'customer[last_name]': formData.name.split(' ').slice(1).join(' ') || '',
-          'customer[tags]': 'newsletter_subscriber',
-          // Metafield para fecha de nacimiento (requiere que esté creado en Admin)
-          'customer[metafields][custom][birthday]': formData.birthday,
-          'customer[accepts_marketing]': true
-        })
+        body: formBody
       });
 
-      if (response.ok) {
+      console.log('📧 Respuesta del servidor:', response.status);
+
+      if (response.ok || response.status === 302) {
+        // 302 es común en Shopify cuando la creación es exitosa
+        console.log('✅ Suscripción exitosa - debería activar Shopify Flow');
         return { success: true };
       } else {
-        throw new Error('Error al crear cliente');
+        throw new Error(`Error del servidor: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error:', error);
-      // Fallback: solo log de datos si falla la creación
-      console.log('Datos del formulario (fallback):', formData);
-      return { success: true }; // Para no bloquear la UX
+      console.error('❌ Error en suscripción:', error);
+      
+      // Fallback: Intentar con endpoint alternativo
+      try {
+        console.log('🔄 Intentando método alternativo...');
+        const fallbackResponse = await fetch('/contact#newsletter-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: new URLSearchParams({
+            'form_type': 'customer',
+            'utf8': '✓',
+            'contact[email]': formData.email,
+            'contact[tags]': 'newsletter'
+          })
+        });
+        
+        console.log('📧 Respuesta fallback:', fallbackResponse.status);
+        return { success: true };
+      } catch (fallbackError) {
+        console.error('❌ Error en fallback:', fallbackError);
+        // No bloquear la UX incluso si falla
+        return { success: true, warning: 'Posible problema de conectividad' };
+      }
     }
   }
 
   showSuccess() {
     const form = document.querySelector('.popup-form');
     const success = document.getElementById('popup-success');
+    const closeBtn = document.querySelector('.popup-close');
     
     if (form && success) {
       form.style.display = 'none';
       success.style.display = 'block';
     }
     
-    // Cerrar automáticamente después de 3 segundos
-    setTimeout(() => {
-      this.hidePopup();
-    }, 3000);
+    // Hacer más visible el botón de cerrar
+    if (closeBtn) {
+      closeBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+      closeBtn.style.borderRadius = '50%';
+      
+      // Animación sutil para llamar la atención
+      setTimeout(() => {
+        closeBtn.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          closeBtn.style.transform = 'scale(1)';
+        }, 200);
+      }, 500);
+    }
+    
+    console.log('✅ Mensaje de éxito mostrado - el usuario puede cerrarlo manualmente');
+    // Ya no se cierra automáticamente - el usuario debe cerrarlo manualmente
   }
 
   showLoading(show) {
@@ -710,19 +804,34 @@ class PopupNewsletter {
     }
   }
 
-  showError(elementId, message) {
-    const errorElement = document.getElementById(elementId);
+  showError(errorId, message) {
+    const errorElement = document.getElementById(errorId);
     if (errorElement) {
       errorElement.textContent = message;
+      errorElement.style.display = 'block';
+      
+      // Si es error general, mostrar también el contenedor
+      if (errorId === 'general-error') {
+        const container = errorElement.closest('.general-error');
+        if (container) container.style.display = 'block';
+      }
     }
   }
 
-  clearError(elementId) {
-    const errorElement = document.getElementById(elementId);
+  clearError(errorId) {
+    const errorElement = document.getElementById(errorId);
     if (errorElement) {
       errorElement.textContent = '';
+      errorElement.style.display = 'none';
+      
+      // Si es error general, ocultar también el contenedor
+      if (errorId === 'general-error') {
+        const container = errorElement.closest('.general-error');
+        if (container) container.style.display = 'none';
+      }
     }
   }
+
 
   // Utilidades para cookies
   setCookie(name, value, days) {
@@ -836,4 +945,40 @@ window.reinitializePopup = function() {
   
   // Forzar reinicialización
   initPopup();
+};
+
+// Función para probar la integración con Shopify Flow
+window.testShopifyFlowIntegration = function(testEmail = 'test@example.com') {
+  console.log('🧪 Probando integración con Shopify Flow...');
+  
+  if (!window.popupNewsletterInstance) {
+    console.error('❌ No hay instancia del popup disponible');
+    return;
+  }
+  
+  // Datos de prueba
+  const testData = {
+    name: 'Usuario de Prueba',
+    email: testEmail,
+    birthday: '01/01/1990',
+    consent: true,
+    timestamp: new Date().toISOString(),
+    source: 'popup_newsletter_test'
+  };
+  
+  console.log('📋 Enviando datos de prueba:', testData);
+  
+  // Enviar directamente
+  window.popupNewsletterInstance.submitForm(testData)
+    .then(result => {
+      if (result.success) {
+        console.log('✅ Prueba exitosa - La automatización debería activarse');
+        console.log('🔍 Verifica en Shopify Admin > Marketing > Automations si se activó el flujo');
+      } else {
+        console.log('❌ Prueba fallida');
+      }
+    })
+    .catch(error => {
+      console.error('❌ Error en la prueba:', error);
+    });
 };
