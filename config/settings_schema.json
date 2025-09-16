@@ -1579,7 +1579,7 @@
       {
         "type": "range",
         "id": "popup_min_height",
-        "min": 250,
+        "min": 300,
         "max": 500,
         "step": 20,
         "unit": "px",
