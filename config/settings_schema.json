@@ -1465,5 +1465,69 @@
         "default": "scheme-1"
       }
     ]
+  },
+  {
+    "name": "Popup Newsletter",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración del Popup"
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_show_image",
+        "label": "Mostrar imagen",
+        "default": false
+      },
+      {
+        "type": "image_picker",
+        "id": "popup_image",
+        "label": "Imagen del popup"
+      },
+      {
+        "type": "range",
+        "id": "popup_image_width",
+        "min": 200,
+        "max": 600,
+        "step": 20,
+        "unit": "px",
+        "label": "Ancho de imagen",
+        "default": 400
+      },
+      {
+        "type": "range",
+        "id": "popup_image_height",
+        "min": 60,
+        "max": 200,
+        "step": 10,
+        "unit": "px",
+        "label": "Alto de imagen",
+        "default": 120
+      },
+      {
+        "type": "text",
+        "id": "popup_title",
+        "label": "Título del popup",
+        "default": "¡Únete a nuestra comunidad!"
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_show_title_icon",
+        "label": "Mostrar icono en título",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "popup_title_icon",
+        "label": "Icono del título (emoji)",
+        "default": "✨"
+      },
+      {
+        "type": "textarea",
+        "id": "popup_subtitle",
+        "label": "Subtítulo del popup",
+        "default": "Recibe ofertas exclusivas y mantente al día con nuestras novedades"
+      }
+    ]
   }
 ]

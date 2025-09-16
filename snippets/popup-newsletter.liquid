@@ -13,16 +13,25 @@
       </button>
       
       <div class="popup-header">
-        <!-- Imagen de header (opcional) -->
-        <div class="popup-image">
-          <img src="{{ 'popup-newsletter-banner.jpg' | asset_url }}" alt="Newsletter" class="popup-banner-img">
-        </div>
+        <!-- Imagen de header (configurable) -->
+        {% if settings.popup_show_image and settings.popup_image %}
+          <div class="popup-image">
+            <img 
+              src="{{ settings.popup_image | image_url: width: settings.popup_image_width, height: settings.popup_image_height }}" 
+              alt="{{ settings.popup_image.alt | default: 'Newsletter' }}" 
+              class="popup-banner-img"
+              style="height: {{ settings.popup_image_height | default: 120 }}px;"
+            >
+          </div>
+        {% endif %}
         
         <h2 class="popup-title">
-          <span class="title-icon">✨</span>
-          ¡Únete a nuestra comunidad!
+          {% if settings.popup_show_title_icon %}
+            <span class="title-icon">{{ settings.popup_title_icon | default: '✨' }}</span>
+          {% endif %}
+          {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' }}
         </h2>
-        <p class="popup-subtitle">Recibe ofertas exclusivas y mantente al día con nuestras novedades</p>
+        <p class="popup-subtitle">{{ settings.popup_subtitle | default: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades' }}</p>
         
         <!-- Beneficios visuales -->
         <div class="popup-benefits">

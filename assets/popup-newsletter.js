@@ -437,11 +437,21 @@ class PopupNewsletter {
 }
 
 // Inicializar el popup cuando se carga el script
-document.addEventListener('DOMContentLoaded', () => {
-  new PopupNewsletter();
-});
+function initPopup() {
+  const popup = document.getElementById('popup-newsletter');
+  if (popup) {
+    new PopupNewsletter();
+    console.log('Popup Newsletter inicializado correctamente');
+  } else {
+    console.log('Elemento popup-newsletter no encontrado');
+    // Reintentar después de 1 segundo
+    setTimeout(initPopup, 1000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initPopup);
 
 // También inicializar si el DOM ya está listo
 if (document.readyState !== 'loading') {
-  new PopupNewsletter();
+  initPopup();
 }
