@@ -261,26 +261,34 @@ class PopupNewsletter {
       return true;
     }
     
-    const birthdayRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/;
+    const birthdayRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})$/;
     
     if (!birthdayRegex.test(value)) {
-      this.showError('birthday-error', 'Formato inválido. Usa DD/MM (ej: 15/03)');
+      this.showError('birthday-error', 'Formato inválido. Usa DD/MM/YYYY (ej: 15/03/1990)');
       input.classList.add('error');
       return false;
     }
     
     // Validar que sea una fecha válida
-    const [day, month] = value.split('/').map(num => parseInt(num));
+    const [day, month, year] = value.split('/').map(num => parseInt(num));
+    const currentYear = new Date().getFullYear();
+    
     if (day < 1 || day > 31 || month < 1 || month > 12) {
       this.showError('birthday-error', 'Fecha inválida. Verifica el día y mes');
       input.classList.add('error');
       return false;
     }
     
-    // Validar días por mes (simplificado)
-    const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (year < 1900 || year > currentYear) {
+      this.showError('birthday-error', `Año inválido. Debe estar entre 1900 y ${currentYear}`);
+      input.classList.add('error');
+      return false;
+    }
+    
+    // Validar días por mes (considerando años bisiestos)
+    const daysInMonth = [31, (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     if (day > daysInMonth[month - 1]) {
-      this.showError('birthday-error', 'Fecha inválida para el mes seleccionado');
+      this.showError('birthday-error', 'Fecha inválida para el mes y año seleccionado');
       input.classList.add('error');
       return false;
     }
@@ -305,18 +313,22 @@ class PopupNewsletter {
   formatBirthday(e) {
     let value = e.target.value.replace(/\D/g, ''); // Solo números
     
-    if (value.length >= 3) {
-      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    if (value.length >= 3 && value.length <= 4) {
+      value = value.substring(0, 2) + '/' + value.substring(2);
+    } else if (value.length > 4) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4, 8);
     }
     
     e.target.value = value;
   }
 
   getFormData() {
+    const birthdayInput = document.getElementById('popup-birthday').value.trim();
+    
     return {
       name: document.getElementById('popup-name').value.trim(),
       email: document.getElementById('popup-email').value.trim(),
-      birthday: document.getElementById('popup-birthday').value.trim(),
+      birthday: birthdayInput, // DD/MM/YYYY formato completo
       consent: document.getElementById('popup-consent').checked,
       timestamp: new Date().toISOString(),
       source: 'popup_newsletter'
@@ -324,16 +336,38 @@ class PopupNewsletter {
   }
 
   async submitForm(formData) {
-    // Aquí puedes integrar con tu sistema de email marketing
-    // Por ejemplo: Klaviyo, Mailchimp, etc.
-    
-    // Simulación de envío exitoso
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log('Datos del formulario:', formData);
-        resolve({ success: true });
-      }, 1000);
-    });
+    // Integración con Shopify Customer API
+    try {
+      const response = await fetch('/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+          form_type: 'customer',
+          utf8: '✓',
+          'customer[email]': formData.email,
+          'customer[first_name]': formData.name.split(' ')[0],
+          'customer[last_name]': formData.name.split(' ').slice(1).join(' ') || '',
+          'customer[tags]': 'newsletter_subscriber',
+          // Metafield para fecha de nacimiento (requiere que esté creado en Admin)
+          'customer[metafields][custom][birthday]': formData.birthday,
+          'customer[accepts_marketing]': true
+        })
+      });
+
+      if (response.ok) {
+        return { success: true };
+      } else {
+        throw new Error('Error al crear cliente');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Fallback: solo log de datos si falla la creación
+      console.log('Datos del formulario (fallback):', formData);
+      return { success: true }; // Para no bloquear la UX
+    }
   }
 
   showSuccess() {

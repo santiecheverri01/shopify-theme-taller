@@ -51,12 +51,12 @@
             id="popup-birthday" 
             name="birthday" 
             class="form-input" 
-            placeholder="DD/MM"
-            maxlength="5"
-            pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])$"
+            placeholder="DD/MM/YYYY"
+            maxlength="10"
+            pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$"
           >
           <span class="error-message" id="birthday-error"></span>
-          <small class="form-help">Formato: DD/MM (ej: 15/03)</small>
+          <small class="form-help">Formato: DD/MM/YYYY (ej: 15/03/1990)</small>
         </div>
 
         <div class="form-group form-checkbox">
