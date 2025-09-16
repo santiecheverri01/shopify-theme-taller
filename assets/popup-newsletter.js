@@ -13,10 +13,10 @@ class PopupNewsletter {
     
     // Configuración
     this.config = {
-      showDelay: 3000, // 3 segundos después de cargar la página
+      showDelay: 1000, // 3 segundos después de cargar la página
       showOnExit: true, // Mostrar cuando el usuario intenta salir
       cookieName: 'popup_newsletter_shown',
-      cookieExpiry: 7, // días
+      cookieExpiry: 0, // Solo por sesión (se borra al cerrar navegador)
       submitEndpoint: '/contact#contact_form' // Endpoint para enviar el formulario
     };
 
