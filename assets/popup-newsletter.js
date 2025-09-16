@@ -763,10 +763,20 @@ class PopupNewsletter {
     const success = document.getElementById('popup-success');
     const closeBtn = document.querySelector('.popup-close');
     
+    // Ocultar el título y subtítulo de la parte superior
+    const title = document.getElementById('popup-title');
+    const subtitle = document.getElementById('popup-subtitle');
+    const logoHeader = document.querySelector('.popup-logo-header');
+    
     if (form && success) {
       form.style.display = 'none';
       success.style.display = 'block';
     }
+    
+    // Ocultar elementos de la parte superior
+    if (title) title.style.display = 'none';
+    if (subtitle) subtitle.style.display = 'none';
+    if (logoHeader) logoHeader.style.display = 'none';
     
     // Hacer más visible el botón de cerrar
     if (closeBtn) {
