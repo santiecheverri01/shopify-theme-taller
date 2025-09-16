@@ -127,6 +127,8 @@
     "show_cart_note": true,
     "cart_drawer_collection": "",
     "popup_enabled": true,
+    "popup_show_delay": 1,
+    "popup_cookie_expiry": 0,
     "popup_show_logo": true,
     "popup_show_image": true,
     "popup_image": "shopify://shop_images/Diseno_sin_titulo_3.png",
