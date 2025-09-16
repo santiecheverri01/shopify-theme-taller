@@ -57,13 +57,27 @@ class PopupNewsletter {
     this.config.showOnExit = settings.showOnExit !== undefined ? settings.showOnExit : this.config.showOnExit;
     this.config.cookieExpiry = settings.cookieExpiry !== undefined ? settings.cookieExpiry : this.config.cookieExpiry;
     
+    // Configurar logo
+    if (settings.showLogo && settings.logoUrl) {
+      const logoContainer = document.getElementById('popup-logo-container');
+      const logoElement = document.getElementById('popup-logo-img');
+      if (logoContainer && logoElement) {
+        logoElement.src = settings.logoUrl;
+        logoElement.style.width = settings.logoWidth + 'px';
+        logoContainer.style.display = 'block';
+      }
+    }
+    
     // Configurar imagen
     if (settings.showImage && settings.imageUrl) {
       const imageContainer = document.getElementById('popup-image-container');
       const imageElement = document.getElementById('popup-banner-img');
       if (imageContainer && imageElement) {
         imageElement.src = settings.imageUrl;
-        imageElement.style.height = settings.imageHeight + 'px';
+        
+        // Aplicar clase de tamaño para conservar ratio
+        imageElement.className = 'popup-banner-img popup-img-' + (settings.imageSize || 'medium');
+        
         imageContainer.style.display = 'block';
       }
     }

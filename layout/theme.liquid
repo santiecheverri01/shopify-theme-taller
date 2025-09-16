@@ -325,6 +325,16 @@
 
     <!-- Popup Newsletter -->
     {%- render 'popup-newsletter' -%}
+    
+    <!-- Configuración del popup (buscar en todas las páginas) -->
+    {% if template.name == 'index' %}
+      {% for section in content_for_index.sections %}
+        {% if section.type == 'popup-newsletter-config' %}
+          {{ section }}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
 
     <script>
       window.shopUrl = '{{ request.origin }}';

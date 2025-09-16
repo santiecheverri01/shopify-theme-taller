@@ -4,15 +4,36 @@
 
 {% comment %} Esta sección no renderiza nada visible, solo almacena configuraciones {% endcomment %}
 
+<!-- Configuración oculta del popup -->
+
 <script>
   // Pasar configuraciones del popup al JavaScript global
   window.popupNewsletterSettings = {
     showDelay: {{ section.settings.show_delay | default: 3000 }},
     showOnExit: {{ section.settings.show_on_exit | default: true }},
     cookieExpiry: {{ section.settings.cookie_expiry | default: 0 }},
+    showLogo: {{ section.settings.show_logo | default: false }},
+    logoSource: {{ section.settings.logo_source | default: 'theme_logo' | json }},
+    {% if section.settings.logo_source == 'custom_logo' and section.settings.custom_logo %}
+      logoUrl: '{{ section.settings.custom_logo | image_url: width: section.settings.logo_width }}',
+    {% elsif settings.logo %}
+      logoUrl: '{{ settings.logo | image_url: width: section.settings.logo_width }}',
+    {% else %}
+      logoUrl: null,
+    {% endif %}
+    logoWidth: {{ section.settings.logo_width | default: 120 }},
     showImage: {{ section.settings.show_image | default: false }},
-    imageUrl: {% if section.settings.popup_image %}'{{ section.settings.popup_image | image_url: width: section.settings.image_width, height: section.settings.image_height }}'{% else %}null{% endif %},
-    imageHeight: {{ section.settings.image_height | default: 120 }},
+    {% assign image_size = section.settings.image_size | default: 'medium' %}
+    {% case image_size %}
+      {% when 'small' %}
+        {% assign image_width = 300 %}
+      {% when 'large' %}
+        {% assign image_width = 500 %}
+      {% else %}
+        {% assign image_width = 400 %}
+    {% endcase %}
+    imageUrl: {% if section.settings.popup_image %}'{{ section.settings.popup_image | image_url: width: image_width }}'{% else %}null{% endif %},
+    imageSize: {{ image_size | json }},
     title: {{ section.settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},
     showTitleIcon: {{ section.settings.show_title_icon | default: true }},
     titleIcon: {{ section.settings.title_icon | default: '✨' | json }},
@@ -71,12 +92,56 @@
     },
     {
       "type": "header",
+      "content": "🏷️ Logo del Popup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "Mostrar logo",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "logo_source",
+      "label": "📍 Fuente del logo",
+      "options": [
+        {
+          "value": "theme_logo",
+          "label": "🎨 Usar logo del tema"
+        },
+        {
+          "value": "custom_logo",
+          "label": "📷 Subir logo personalizado"
+        }
+      ],
+      "default": "theme_logo",
+      "info": "Elige si usar el logo del tema o subir uno específico para el popup"
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_logo",
+      "label": "📷 Logo personalizado",
+      "info": "Solo se usa si seleccionas 'Subir logo personalizado' arriba"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "📐 Ancho del logo",
+      "default": 120,
+      "info": "El alto se ajusta automáticamente"
+    },
+    {
+      "type": "header",
       "content": "🖼️ Imagen del Popup"
     },
     {
       "type": "checkbox",
       "id": "show_image",
-      "label": "Mostrar imagen",
+      "label": "Mostrar imagen banner",
       "default": false
     },
     {
@@ -84,26 +149,27 @@
       "id": "popup_image",
       "label": "📷 Imagen del popup"
     },
-    {
-      "type": "range",
-      "id": "image_width",
-      "min": 200,
-      "max": 600,
-      "step": 20,
-      "unit": "px",
-      "label": "📐 Ancho de imagen",
-      "default": 400
-    },
-    {
-      "type": "range",
-      "id": "image_height",
-      "min": 60,
-      "max": 200,
-      "step": 10,
-      "unit": "px",
-      "label": "📏 Alto de imagen",
-      "default": 120
-    },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "📏 Tamaño de imagen",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small (300px)"
+          },
+          {
+            "value": "medium",
+            "label": "Medium (400px)"
+          },
+          {
+            "value": "large",
+            "label": "Large (500px)"
+          }
+        ],
+        "default": "medium",
+        "info": "El alto se ajusta automáticamente para conservar el ratio"
+      },
     {
       "type": "header",
       "content": "✏️ Textos del Popup"
