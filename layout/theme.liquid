@@ -328,7 +328,7 @@
     
     <!-- Configuración del popup desde theme settings -->
     <script>
-      // Configuración por defecto que funciona en todas las páginas
+      // Configuración que incluye tanto defaults como theme settings
       window.popupNewsletterSettings = {
         showDelay: 3000,
         showOnExit: true,
@@ -337,13 +337,19 @@
         logoSource: 'theme_logo',
         logoUrl: {% if settings.logo %}'{{ settings.logo | image_url: width: 120 }}'{% else %}null{% endif %},
         logoWidth: 120,
-        showImage: false,
-        imageUrl: null,
+        showImage: {{ settings.popup_show_image | default: false }},
+        {% if settings.popup_image %}
+          imageUrl: '{{ settings.popup_image | image_url: width: settings.popup_image_width | default: 400 }}',
+        {% else %}
+          imageUrl: null,
+        {% endif %}
+        imageWidth: {{ settings.popup_image_width | default: 400 }},
+        imageHeight: {{ settings.popup_image_height | default: 120 }},
         imageSize: 'medium',
-        title: '¡Únete a nuestra comunidad!',
-        showTitleIcon: true,
-        titleIcon: '✨',
-        subtitle: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades',
+        title: {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},
+        showTitleIcon: {{ settings.popup_show_title_icon | default: true }},
+        titleIcon: {{ settings.popup_title_icon | default: '✨' | json }},
+        subtitle: {{ settings.popup_subtitle | default: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades' | json }},
         showBenefits: true,
         benefit1Icon: '🎁',
         benefit1Text: 'Descuentos exclusivos',
@@ -356,6 +362,16 @@
         successTitle: '¡Gracias por suscribirte!',
         successMessage: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.'
       };
+      
+      console.log('🎨 Configuraciones del theme aplicadas:', window.popupNewsletterSettings);
+      
+      // Forzar aplicación de configuraciones si el popup ya existe
+      setTimeout(function() {
+        if (window.popupNewsletterInstance && window.popupNewsletterInstance.applyDynamicSettings) {
+          console.log('🔄 Re-aplicando configuraciones del theme al popup existente...');
+          window.popupNewsletterInstance.applyDynamicSettings();
+        }
+      }, 100);
     </script>
     
     <!-- Configuración del popup desde secciones (solo en homepage) -->

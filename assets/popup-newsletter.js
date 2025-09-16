@@ -91,7 +91,16 @@ class PopupNewsletter {
         // Aplicar clase de tamaño para conservar ratio
         imageElement.className = 'popup-banner-img popup-img-' + (settings.imageSize || 'medium');
         
+        // Aplicar dimensiones específicas si están disponibles (desde theme settings)
+        if (settings.imageWidth) {
+          imageElement.style.maxWidth = settings.imageWidth + 'px';
+        }
+        if (settings.imageHeight) {
+          imageElement.style.maxHeight = settings.imageHeight + 'px';
+        }
+        
         imageContainer.style.display = 'block';
+        console.log('🖼️ Imagen del popup configurada:', settings.imageUrl);
       }
     }
     
