@@ -1554,7 +1554,7 @@
         "step": 20,
         "unit": "px",
         "label": "📏 Ancho máximo del popup",
-        "default": 700
+        "default": 800
       },
       {
         "type": "range",

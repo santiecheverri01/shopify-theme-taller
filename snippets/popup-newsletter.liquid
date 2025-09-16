@@ -165,7 +165,8 @@
     display: flex;
     gap: 24px;
     align-items: stretch;
-    min-height: 400px;
+    min-height: 320px;
+    width: 100%;
   }
 
   /* Layout: Imagen izquierda - Contenido derecha */
@@ -195,11 +196,18 @@
 
   .popup-image-container {
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
 
   .popup-content-container {
     flex: 1;
-    min-width: 250px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .popup-logo-header {
@@ -282,9 +290,9 @@
   /* Ajustes específicos para layouts horizontales - imagen ocupa toda la altura */
   .popup-layout.layout-image-left .popup-image-container,
   .popup-layout.layout-image-right .popup-image-container {
-    min-width: 120px;
-    max-width: 250px;
     align-self: stretch;
+    border-radius: 12px;
+    overflow: hidden;
   }
 
   .popup-layout.layout-image-left .popup-banner-img,

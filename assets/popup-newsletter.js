@@ -114,8 +114,30 @@ class PopupNewsletter {
     const popupContent = this.popup?.querySelector('.popup-content');
     const popupLayout = document.getElementById('popup-layout');
     
-    if (popupContainer && settings.maxWidth) {
-      popupContainer.style.maxWidth = settings.maxWidth + 'px';
+    // Calcular ancho dinámico basado en la imagen
+    let dynamicWidth = settings.maxWidth || 800;
+    
+    // Si hay imagen y está en layout horizontal, ajustar el ancho
+    if (settings.showImage && settings.imageWidth && 
+        (settings.layout === 'image-left' || settings.layout === 'image-right')) {
+      // Ancho de imagen + contenido mínimo + padding + gap
+      const contentMinWidth = 380; // Ancho mínimo para el contenido de texto
+      const totalPadding = (settings.padding || 24) * 2;
+      const layoutGap = settings.gap || 24;
+      
+      dynamicWidth = settings.imageWidth + contentMinWidth + totalPadding + layoutGap;
+    }
+    
+    // Asegurar que sea SIEMPRE más ancho que alto (proporción 2.5:1 mínimo)
+    const minHeight = settings.minHeight || 320;
+    const minWidthRatio = minHeight * 2.5;
+    if (dynamicWidth < minWidthRatio) {
+      dynamicWidth = minWidthRatio;
+    }
+    
+    if (popupContainer) {
+      popupContainer.style.maxWidth = dynamicWidth + 'px';
+      popupContainer.style.width = 'auto';
     }
     
     if (popupContent) {
@@ -145,6 +167,12 @@ class PopupNewsletter {
     }
     
     console.log('🎨 Estilos generales aplicados');
+    console.log('📐 Cálculo de ancho dinámico:');
+    console.log('  - Ancho máximo configurado:', settings.maxWidth + 'px');
+    console.log('  - Ancho de imagen:', settings.imageWidth + 'px');
+    console.log('  - Altura mínima:', (settings.minHeight || 320) + 'px');
+    console.log('  - Ancho final calculado:', dynamicWidth + 'px');
+    console.log('  - Proporción ancho/alto:', (dynamicWidth / (settings.minHeight || 320)).toFixed(2) + ':1');
   }
 
   applyLayout(settings) {
@@ -184,10 +212,14 @@ class PopupNewsletter {
       if (settings.imageWidth) {
         imageContainer.style.width = settings.imageWidth + 'px';
         imageContainer.style.maxWidth = settings.imageWidth + 'px';
+        imageContainer.style.flexShrink = '0'; // Evitar que la imagen se comprima
       }
       
       imageContainer.style.display = 'block';
-      console.log('🖼️ Imagen configurada:', settings.imageUrl);
+      console.log('🖼️ Imagen configurada:', settings.imageUrl, 'Ancho:', settings.imageWidth + 'px');
+    } else if (imageContainer) {
+      imageContainer.style.display = 'none';
+      console.log('🖼️ Imagen ocultada');
     }
   }
 
