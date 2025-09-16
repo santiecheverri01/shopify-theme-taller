@@ -40,8 +40,100 @@ class PopupNewsletter {
     this.closeBtn = this.popup.querySelector('.popup-close');
     this.overlay = this.popup;
 
+    // Aplicar configuraciones dinámicas si están disponibles
+    this.applyDynamicSettings();
+
     this.bindEvents();
     this.schedulePopup();
+  }
+
+  applyDynamicSettings() {
+    if (typeof window.popupNewsletterSettings === 'undefined') return;
+    
+    const settings = window.popupNewsletterSettings;
+    
+    // Actualizar configuración del comportamiento
+    this.config.showDelay = settings.showDelay || this.config.showDelay;
+    this.config.showOnExit = settings.showOnExit !== undefined ? settings.showOnExit : this.config.showOnExit;
+    this.config.cookieExpiry = settings.cookieExpiry !== undefined ? settings.cookieExpiry : this.config.cookieExpiry;
+    
+    // Configurar imagen
+    if (settings.showImage && settings.imageUrl) {
+      const imageContainer = document.getElementById('popup-image-container');
+      const imageElement = document.getElementById('popup-banner-img');
+      if (imageContainer && imageElement) {
+        imageElement.src = settings.imageUrl;
+        imageElement.style.height = settings.imageHeight + 'px';
+        imageContainer.style.display = 'block';
+      }
+    }
+    
+    // Configurar título
+    const titleElement = document.getElementById('popup-title-text');
+    const titleIconElement = document.getElementById('popup-title-icon');
+    if (titleElement) {
+      titleElement.textContent = settings.title || '¡Únete a nuestra comunidad!';
+    }
+    if (titleIconElement) {
+      if (settings.showTitleIcon) {
+        titleIconElement.textContent = settings.titleIcon || '✨';
+        titleIconElement.style.display = 'inline';
+      } else {
+        titleIconElement.style.display = 'none';
+      }
+    }
+    
+    // Configurar subtítulo
+    const subtitleElement = document.getElementById('popup-subtitle');
+    if (subtitleElement) {
+      subtitleElement.textContent = settings.subtitle || 'Recibe ofertas exclusivas y mantente al día con nuestras novedades';
+    }
+    
+    // Configurar beneficios
+    if (!settings.showBenefits) {
+      const benefitsContainer = document.getElementById('popup-benefits');
+      if (benefitsContainer) {
+        benefitsContainer.style.display = 'none';
+      }
+    } else {
+      // Beneficio 1
+      const benefit1Icon = document.getElementById('benefit-1-icon');
+      const benefit1Text = document.getElementById('benefit-1-text');
+      if (benefit1Icon) benefit1Icon.textContent = settings.benefit1Icon || '🎁';
+      if (benefit1Text) benefit1Text.textContent = settings.benefit1Text || 'Descuentos exclusivos';
+      
+      // Beneficio 2
+      const benefit2Icon = document.getElementById('benefit-2-icon');
+      const benefit2Text = document.getElementById('benefit-2-text');
+      if (benefit2Icon) benefit2Icon.textContent = settings.benefit2Icon || '👕';
+      if (benefit2Text) benefit2Text.textContent = settings.benefit2Text || 'Nuevas colecciones';
+      
+      // Beneficio 3
+      const benefit3Icon = document.getElementById('benefit-3-icon');
+      const benefit3Text = document.getElementById('benefit-3-text');
+      if (benefit3Icon) benefit3Icon.textContent = settings.benefit3Icon || '🎂';
+      if (benefit3Text) benefit3Text.textContent = settings.benefit3Text || 'Sorpresa de cumpleaños';
+    }
+    
+    // Configurar botón
+    const buttonElement = document.getElementById('popup-btn-text');
+    const submitButton = document.getElementById('popup-submit-btn');
+    if (buttonElement) {
+      buttonElement.textContent = settings.buttonText || 'Suscribirme';
+    }
+    if (submitButton && settings.buttonColor) {
+      submitButton.style.background = settings.buttonColor;
+    }
+    
+    // Configurar mensajes de éxito
+    const successTitle = document.getElementById('popup-success-title');
+    const successMessage = document.getElementById('popup-success-message');
+    if (successTitle) {
+      successTitle.textContent = settings.successTitle || '¡Gracias por suscribirte!';
+    }
+    if (successMessage) {
+      successMessage.textContent = settings.successMessage || 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.';
+    }
   }
 
   bindEvents() {

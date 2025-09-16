@@ -1,0 +1,221 @@
+{% comment %}
+  Configuración del Popup Newsletter - Solo para configurar, no se muestra visualmente
+{% endcomment %}
+
+{% comment %} Esta sección no renderiza nada visible, solo almacena configuraciones {% endcomment %}
+
+<script>
+  // Pasar configuraciones del popup al JavaScript global
+  window.popupNewsletterSettings = {
+    showDelay: {{ section.settings.show_delay | default: 3000 }},
+    showOnExit: {{ section.settings.show_on_exit | default: true }},
+    cookieExpiry: {{ section.settings.cookie_expiry | default: 0 }},
+    showImage: {{ section.settings.show_image | default: false }},
+    imageUrl: {% if section.settings.popup_image %}'{{ section.settings.popup_image | image_url: width: section.settings.image_width, height: section.settings.image_height }}'{% else %}null{% endif %},
+    imageHeight: {{ section.settings.image_height | default: 120 }},
+    title: {{ section.settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},
+    showTitleIcon: {{ section.settings.show_title_icon | default: true }},
+    titleIcon: {{ section.settings.title_icon | default: '✨' | json }},
+    subtitle: {{ section.settings.popup_subtitle | default: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades' | json }},
+    showBenefits: {{ section.settings.show_benefits | default: true }},
+    benefit1Icon: {{ section.settings.benefit_1_icon | default: '🎁' | json }},
+    benefit1Text: {{ section.settings.benefit_1_text | default: 'Descuentos exclusivos' | json }},
+    benefit2Icon: {{ section.settings.benefit_2_icon | default: '👕' | json }},
+    benefit2Text: {{ section.settings.benefit_2_text | default: 'Nuevas colecciones' | json }},
+    benefit3Icon: {{ section.settings.benefit_3_icon | default: '🎂' | json }},
+    benefit3Text: {{ section.settings.benefit_3_text | default: 'Sorpresa de cumpleaños' | json }},
+    buttonText: {{ section.settings.button_text | default: 'Suscribirme' | json }},
+    buttonColor: {{ section.settings.button_color | default: '#111827' | json }},
+    successTitle: {{ section.settings.success_title | default: '¡Gracias por suscribirte!' | json }},
+    successMessage: {{ section.settings.success_message | default: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.' | json }}
+  };
+</script>
+
+{% schema %}
+{
+  "name": "Popup Newsletter Config",
+  "class": "popup-newsletter-config",
+  "settings": [
+    {
+      "type": "header",
+      "content": "⚙️ Configuración del Comportamiento"
+    },
+    {
+      "type": "range",
+      "id": "show_delay",
+      "min": 0,
+      "max": 10000,
+      "step": 500,
+      "unit": "ms",
+      "label": "⏱️ Tiempo antes de mostrar",
+      "default": 3000,
+      "info": "Tiempo en milisegundos (1000 = 1 segundo)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_exit",
+      "label": "🚪 Mostrar al intentar salir",
+      "default": true,
+      "info": "Mostrar popup cuando el usuario mueve el mouse fuera de la ventana"
+    },
+    {
+      "type": "range",
+      "id": "cookie_expiry",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "días",
+      "label": "🍪 Recordar por",
+      "default": 0,
+      "info": "0 = solo por sesión, 7 = una semana"
+    },
+    {
+      "type": "header",
+      "content": "🖼️ Imagen del Popup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Mostrar imagen",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "popup_image",
+      "label": "📷 Imagen del popup"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "📐 Ancho de imagen",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "📏 Alto de imagen",
+      "default": 120
+    },
+    {
+      "type": "header",
+      "content": "✏️ Textos del Popup"
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "📝 Título principal",
+      "default": "¡Únete a nuestra comunidad!"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title_icon",
+      "label": "Mostrar icono en título",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title_icon",
+      "label": "✨ Icono del título",
+      "default": "✨",
+      "info": "Usa emojis como ✨ 🎉 💎 ⭐ 🎁"
+    },
+    {
+      "type": "textarea",
+      "id": "popup_subtitle",
+      "label": "📄 Subtítulo",
+      "default": "Recibe ofertas exclusivas y mantente al día con nuestras novedades"
+    },
+    {
+      "type": "header",
+      "content": "🎯 Beneficios"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_benefits",
+      "label": "Mostrar lista de beneficios",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_icon",
+      "label": "🎁 Icono beneficio 1",
+      "default": "🎁"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_text",
+      "label": "Texto beneficio 1",
+      "default": "Descuentos exclusivos"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_icon",
+      "label": "👕 Icono beneficio 2",
+      "default": "👕"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_text",
+      "label": "Texto beneficio 2",
+      "default": "Nuevas colecciones"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_icon",
+      "label": "🎂 Icono beneficio 3",
+      "default": "🎂"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_text",
+      "label": "Texto beneficio 3",
+      "default": "Sorpresa de cumpleaños"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Personalización"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "📤 Texto del botón",
+      "default": "Suscribirme"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "🎨 Color del botón",
+      "default": "#111827"
+    },
+    {
+      "type": "header",
+      "content": "✅ Mensaje de Éxito"
+    },
+    {
+      "type": "text",
+      "id": "success_title",
+      "label": "🎉 Título de éxito",
+      "default": "¡Gracias por suscribirte!"
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "💌 Mensaje de éxito",
+      "default": "Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Popup Newsletter Config"
+    }
+  ]
+}
+{% endschema %}

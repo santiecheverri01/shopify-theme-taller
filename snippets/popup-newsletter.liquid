@@ -13,39 +13,30 @@
       </button>
       
       <div class="popup-header">
-        <!-- Imagen de header (configurable) -->
-        {% if settings.popup_show_image and settings.popup_image %}
-          <div class="popup-image">
-            <img 
-              src="{{ settings.popup_image | image_url: width: settings.popup_image_width, height: settings.popup_image_height }}" 
-              alt="{{ settings.popup_image.alt | default: 'Newsletter' }}" 
-              class="popup-banner-img"
-              style="height: {{ settings.popup_image_height | default: 120 }}px;"
-            >
-          </div>
-        {% endif %}
+        <!-- Imagen de header (configurable dinámicamente) -->
+        <div class="popup-image" id="popup-image-container" style="display: none;">
+          <img id="popup-banner-img" class="popup-banner-img" alt="Newsletter">
+        </div>
         
-        <h2 class="popup-title">
-          {% if settings.popup_show_title_icon %}
-            <span class="title-icon">{{ settings.popup_title_icon | default: '✨' }}</span>
-          {% endif %}
-          {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' }}
+        <h2 class="popup-title" id="popup-title">
+          <span class="title-icon" id="popup-title-icon">✨</span>
+          <span id="popup-title-text">¡Únete a nuestra comunidad!</span>
         </h2>
-        <p class="popup-subtitle">{{ settings.popup_subtitle | default: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades' }}</p>
+        <p class="popup-subtitle" id="popup-subtitle">Recibe ofertas exclusivas y mantente al día con nuestras novedades</p>
         
         <!-- Beneficios visuales -->
-        <div class="popup-benefits">
-          <div class="benefit-item">
-            <span class="benefit-icon">🎁</span>
-            <span>Descuentos exclusivos</span>
+        <div class="popup-benefits" id="popup-benefits">
+          <div class="benefit-item" id="benefit-1">
+            <span class="benefit-icon" id="benefit-1-icon">🎁</span>
+            <span id="benefit-1-text">Descuentos exclusivos</span>
           </div>
-          <div class="benefit-item">
-            <span class="benefit-icon">👕</span>
-            <span>Nuevas colecciones</span>
+          <div class="benefit-item" id="benefit-2">
+            <span class="benefit-icon" id="benefit-2-icon">👕</span>
+            <span id="benefit-2-text">Nuevas colecciones</span>
           </div>
-          <div class="benefit-item">
-            <span class="benefit-icon">🎂</span>
-            <span>Sorpresa de cumpleaños</span>
+          <div class="benefit-item" id="benefit-3">
+            <span class="benefit-icon" id="benefit-3-icon">🎂</span>
+            <span id="benefit-3-text">Sorpresa de cumpleaños</span>
           </div>
         </div>
       </div>
@@ -103,8 +94,8 @@
           <span class="error-message" id="consent-error"></span>
         </div>
 
-        <button type="submit" class="popup-submit-btn">
-          <span class="btn-text">Suscribirme</span>
+        <button type="submit" class="popup-submit-btn" id="popup-submit-btn">
+          <span class="btn-text" id="popup-btn-text">Suscribirme</span>
           <span class="btn-loading" style="display: none;">
             <svg class="spinner" width="20" height="20" viewBox="0 0 20 20">
               <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="50.265" stroke-dashoffset="50.265">
@@ -124,8 +115,8 @@
             <path d="M20 30L27 37L40 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3>¡Gracias por suscribirte!</h3>
-        <p>Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
+        <h3 id="popup-success-title">¡Gracias por suscribirte!</h3>
+        <p id="popup-success-message">Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
       </div>
     </div>
   </div>
