@@ -326,7 +326,39 @@
     <!-- Popup Newsletter -->
     {%- render 'popup-newsletter' -%}
     
-    <!-- Configuración del popup (buscar en todas las páginas) -->
+    <!-- Configuración del popup desde theme settings -->
+    <script>
+      // Configuración por defecto que funciona en todas las páginas
+      window.popupNewsletterSettings = {
+        showDelay: 3000,
+        showOnExit: true,
+        cookieExpiry: 0,
+        showLogo: false,
+        logoSource: 'theme_logo',
+        logoUrl: {% if settings.logo %}'{{ settings.logo | image_url: width: 120 }}'{% else %}null{% endif %},
+        logoWidth: 120,
+        showImage: false,
+        imageUrl: null,
+        imageSize: 'medium',
+        title: '¡Únete a nuestra comunidad!',
+        showTitleIcon: true,
+        titleIcon: '✨',
+        subtitle: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades',
+        showBenefits: true,
+        benefit1Icon: '🎁',
+        benefit1Text: 'Descuentos exclusivos',
+        benefit2Icon: '👕',
+        benefit2Text: 'Nuevas colecciones',
+        benefit3Icon: '🎂',
+        benefit3Text: 'Sorpresa de cumpleaños',
+        buttonText: 'Suscribirme',
+        buttonColor: '#111827',
+        successTitle: '¡Gracias por suscribirte!',
+        successMessage: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.'
+      };
+    </script>
+    
+    <!-- Configuración del popup desde secciones (solo en homepage) -->
     {% if template.name == 'index' %}
       {% for section in content_for_index.sections %}
         {% if section.type == 'popup-newsletter-config' %}

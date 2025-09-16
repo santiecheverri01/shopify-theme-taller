@@ -7,8 +7,8 @@
 <!-- Configuración oculta del popup -->
 
 <script>
-  // Pasar configuraciones del popup al JavaScript global
-  window.popupNewsletterSettings = {
+  // Sobrescribir configuraciones del popup al JavaScript global
+  window.popupNewsletterSettings = Object.assign(window.popupNewsletterSettings || {}, {
     showDelay: {{ section.settings.show_delay | default: 3000 }},
     showOnExit: {{ section.settings.show_on_exit | default: true }},
     cookieExpiry: {{ section.settings.cookie_expiry | default: 0 }},
@@ -49,7 +49,14 @@
     buttonColor: {{ section.settings.button_color | default: '#111827' | json }},
     successTitle: {{ section.settings.success_title | default: '¡Gracias por suscribirte!' | json }},
     successMessage: {{ section.settings.success_message | default: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.' | json }}
-  };
+  });
+  
+  console.log('🔄 Configuraciones del popup actualizadas desde la sección:', window.popupNewsletterSettings);
+  
+  // Forzar re-aplicación de configuraciones si el popup ya existe
+  if (window.popupNewsletterInstance && window.popupNewsletterInstance.applyDynamicSettings) {
+    window.popupNewsletterInstance.applyDynamicSettings();
+  }
 </script>
 
 {% schema %}

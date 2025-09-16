@@ -11,6 +11,9 @@ class PopupNewsletter {
     this.isSubmitting = false;
     this.hasBeenShown = false;
     
+    // Guardar referencia global para re-aplicar configuraciones
+    window.popupNewsletterInstance = this;
+    
     // Configuración
     this.config = {
       showDelay: 1000, // 3 segundos después de cargar la página
@@ -48,9 +51,16 @@ class PopupNewsletter {
   }
 
   applyDynamicSettings() {
-    if (typeof window.popupNewsletterSettings === 'undefined') return;
+    if (typeof window.popupNewsletterSettings === 'undefined') {
+      console.log('⚠️ Configuraciones del popup no encontradas');
+      return;
+    }
     
     const settings = window.popupNewsletterSettings;
+    console.log('✅ Aplicando configuraciones del popup:', settings);
+    
+    // Limpiar configuraciones anteriores
+    this.clearDynamicElements();
     
     // Actualizar configuración del comportamiento
     this.config.showDelay = settings.showDelay || this.config.showDelay;
@@ -148,6 +158,15 @@ class PopupNewsletter {
     if (successMessage) {
       successMessage.textContent = settings.successMessage || 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.';
     }
+  }
+
+  clearDynamicElements() {
+    // Ocultar elementos que pueden estar visibles de configuraciones anteriores
+    const logoContainer = document.getElementById('popup-logo-container');
+    const imageContainer = document.getElementById('popup-image-container');
+    
+    if (logoContainer) logoContainer.style.display = 'none';
+    if (imageContainer) imageContainer.style.display = 'none';
   }
 
   bindEvents() {
