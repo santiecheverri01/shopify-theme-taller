@@ -9,7 +9,7 @@
 <script>
   // Sobrescribir configuraciones del popup al JavaScript global
   window.popupNewsletterSettings = Object.assign(window.popupNewsletterSettings || {}, {
-    showDelay: {{ section.settings.show_delay | default: 3000 }},
+    showDelay: {{ section.settings.show_delay | default: 3 | times: 1000 }},
     showOnExit: {{ section.settings.show_on_exit | default: true }},
     cookieExpiry: {{ section.settings.cookie_expiry | default: 0 }},
     showLogo: {{ section.settings.show_logo | default: false }},
@@ -72,12 +72,12 @@
         "type": "range",
         "id": "show_delay",
         "min": 0,
-        "max": 9000,
-        "step": 1000,
-        "unit": "ms",
+        "max": 10,
+        "step": 1,
+        "unit": "s",
         "label": "⏱️ Tiempo antes de mostrar",
-        "default": 3000,
-        "info": "Tiempo en milisegundos (1000 = 1 segundo)"
+        "default": 3,
+        "info": "Tiempo en segundos"
       },
     {
       "type": "checkbox",
