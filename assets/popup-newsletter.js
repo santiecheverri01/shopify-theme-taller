@@ -696,70 +696,98 @@ class PopupNewsletter {
     console.log('📧 Enviando suscripción:', formData);
     
     try {
-      // Método 1: Usar el endpoint de contacto que es más confiable
-      const contactFormBody = new FormData();
-      contactFormBody.append('form_type', 'customer');
-      contactFormBody.append('utf8', '✓');
-      contactFormBody.append('customer[email]', formData.email);
-      contactFormBody.append('customer[first_name]', formData.name.split(' ')[0]);
-      contactFormBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || '');
-      contactFormBody.append('customer[accepts_marketing]', '1');
-      contactFormBody.append('customer[password]', this.generateRandomPassword());
-      contactFormBody.append('customer[password_confirmation]', contactFormBody.get('customer[password]'));
+      // Método directo: Crear cliente usando el endpoint correcto de Shopify
+      const password = this.generateRandomPassword();
       
-      // Tags para identificar el origen
-      contactFormBody.append('customer[tags]', 'newsletter_popup,popup_subscriber');
+      const formBody = new URLSearchParams();
+      formBody.append('form_type', 'create_customer');
+      formBody.append('utf8', '✓');
+      formBody.append('customer[email]', formData.email);
+      formBody.append('customer[first_name]', formData.name.split(' ')[0] || 'Usuario');
+      formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || 'Newsletter');
+      formBody.append('customer[password]', password);
+      formBody.append('customer[password_confirmation]', password);
+      formBody.append('customer[accepts_marketing]', '1');
       
       // Agregar fecha de nacimiento si está disponible
       if (formData.birthday && formData.birthday.length > 0) {
-        contactFormBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday}`);
+        formBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday} - Suscrito desde popup`);
+      } else {
+        formBody.append('customer[note]', 'Suscrito desde popup newsletter');
       }
 
-      console.log('📋 Datos enviados:', {
+      console.log('📋 Intentando crear cliente:', {
         email: formData.email,
-        first_name: formData.name.split(' ')[0],
+        first_name: formData.name.split(' ')[0] || 'Usuario',
         accepts_marketing: '1',
-        tags: 'newsletter_popup,popup_subscriber'
+        endpoint: '/account'
       });
 
       const response = await fetch('/account', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: contactFormBody
+        body: formBody.toString()
       });
 
-      console.log('📧 Respuesta del servidor:', response.status, response.statusText);
+      console.log('📧 Respuesta crear cliente:', response.status, response.statusText);
       
-      // Leer la respuesta para más detalles
-      const responseText = await response.text();
-      console.log('📄 Contenido de respuesta:', responseText.substring(0, 200));
-
+      // Si funciona o si el cliente ya existe (422), es éxito
       if (response.ok || response.status === 302 || response.status === 422) {
-        // 422 puede indicar que el cliente ya existe, lo cual está bien
-        console.log('✅ Suscripción procesada - debería activar Shopify Flow');
-        
-        // Intentar también con el endpoint de marketing
-        this.subscribeToMarketing(formData.email);
-        
+        console.log('✅ Cliente creado/actualizado exitosamente');
         return { success: true };
       } else {
-        throw new Error(`Error del servidor: ${response.status}`);
+        // Si falla, intentar método alternativo
+        console.log('⚠️ Método principal falló, intentando alternativo...');
+        return await this.createCustomerAlternative(formData);
       }
-    } catch (error) {
-      console.error('❌ Error en suscripción principal:', error);
       
-      // Fallback: Intentar solo suscripción a marketing
-      try {
-        console.log('🔄 Intentando solo suscripción a marketing...');
-        await this.subscribeToMarketing(formData.email);
+    } catch (error) {
+      console.error('❌ Error en creación de cliente:', error);
+      // Intentar método alternativo
+      return await this.createCustomerAlternative(formData);
+    }
+  }
+
+  async createCustomerAlternative(formData) {
+    try {
+      console.log('🔄 Intentando método alternativo...');
+      
+      // Usar el endpoint de registro directo
+      const formBody = new URLSearchParams();
+      formBody.append('form_type', 'create_customer');
+      formBody.append('utf8', '✓');
+      formBody.append('customer[email]', formData.email);
+      formBody.append('customer[first_name]', formData.name.split(' ')[0] || 'Usuario');
+      formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || 'Newsletter');
+      formBody.append('customer[accepts_marketing]', 'on'); // Usar 'on' en lugar de '1'
+      
+      const response = await fetch('/account/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formBody.toString()
+      });
+
+      console.log('📧 Respuesta método alternativo:', response.status);
+      
+      if (response.ok || response.status === 302 || response.status === 422) {
+        console.log('✅ Cliente creado con método alternativo');
         return { success: true };
-      } catch (fallbackError) {
-        console.error('❌ Error en fallback:', fallbackError);
-        // No bloquear la UX incluso si falla
+      } else {
+        // Último recurso: solo notificar éxito para no bloquear UX
+        console.log('⚠️ Ambos métodos fallaron, pero continuando...');
         return { success: true, warning: 'Posible problema de conectividad' };
       }
+      
+    } catch (error) {
+      console.error('❌ Error en método alternativo:', error);
+      // No bloquear la UX
+      return { success: true, warning: 'Posible problema de conectividad' };
     }
   }
 
@@ -767,29 +795,6 @@ class PopupNewsletter {
     return Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
   }
 
-  async subscribeToMarketing(email) {
-    try {
-      const marketingBody = new FormData();
-      marketingBody.append('form_type', 'customer');
-      marketingBody.append('utf8', '✓');
-      marketingBody.append('customer[email]', email);
-      marketingBody.append('customer[accepts_marketing]', '1');
-
-      const response = await fetch('/contact', {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: marketingBody
-      });
-
-      console.log('📬 Respuesta marketing:', response.status);
-      return response;
-    } catch (error) {
-      console.error('❌ Error en suscripción a marketing:', error);
-      throw error;
-    }
-  }
 
   showSuccess() {
     const form = document.querySelector('.popup-form');
@@ -1050,3 +1055,4 @@ window.debugShopifyFlowStatus = function() {
   console.log('  5. Verifica que tu flujo esté "Active"');
   console.log('  6. Revisa los logs de actividad del flujo');
 };
+
