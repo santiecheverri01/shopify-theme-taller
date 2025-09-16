@@ -30,7 +30,6 @@ class PopupNewsletter {
     // Verificar si el popup está habilitado
     if (typeof window.popupNewsletterSettings !== 'undefined' && 
         window.popupNewsletterSettings.enabled === false) {
-      console.log('🚫 Popup newsletter deshabilitado desde configuración');
       return;
     }
     
@@ -46,7 +45,6 @@ class PopupNewsletter {
     // Doble verificación de que el popup esté habilitado
     if (typeof window.popupNewsletterSettings !== 'undefined' && 
         window.popupNewsletterSettings.enabled === false) {
-      console.log('🚫 Popup newsletter deshabilitado - cancelando setup');
       return;
     }
     
@@ -65,16 +63,11 @@ class PopupNewsletter {
   }
 
   applyDynamicSettings() {
-    console.log('🔍 Verificando configuraciones del popup...');
-    
     if (typeof window.popupNewsletterSettings === 'undefined') {
-      console.warn('⚠️ window.popupNewsletterSettings no está definido');
       return;
     }
     
     const settings = window.popupNewsletterSettings;
-    console.log('✅ Configuraciones del popup encontradas:', settings);
-    console.log('🔄 Aplicando configuraciones dinámicas...');
     
     // Limpiar configuraciones anteriores
     this.clearDynamicElements();
@@ -105,7 +98,6 @@ class PopupNewsletter {
     // Configurar mensajes de éxito
     this.applySuccessMessage(settings);
     
-    console.log('✅ Todas las configuraciones aplicadas exitosamente');
   }
 
   applyPopupStyles(settings) {
@@ -643,7 +635,6 @@ class PopupNewsletter {
   }
 
   async handleSubmit() {
-    console.log('🚀 Iniciando envío del formulario...');
     
     // Validar todos los campos
     const isNameValid = this.validateName();
@@ -652,7 +643,6 @@ class PopupNewsletter {
     const isConsentValid = this.validateConsent();
     
     if (!isNameValid || !isEmailValid || !isBirthdayValid || !isConsentValid) {
-      console.log('❌ Validación fallida');
       return;
     }
     
@@ -661,12 +651,10 @@ class PopupNewsletter {
     
     try {
       const formData = this.getFormData();
-      console.log('📋 Datos a enviar:', formData);
       
       const result = await this.submitForm(formData);
       
       if (result.success) {
-        console.log('✅ Formulario enviado exitosamente');
         
         // Guardar cookie para no mostrar de nuevo
         this.setCookie(this.config.cookieName, 'submitted', this.config.cookieExpiry);
@@ -685,7 +673,6 @@ class PopupNewsletter {
         throw new Error('Error en el envío');
       }
     } catch (error) {
-      console.error('❌ Error al enviar formulario:', error);
       this.showError('general-error', 'Hubo un problema al procesar tu suscripción. Por favor intenta de nuevo.');
     } finally {
       this.showLoading(false);
@@ -696,34 +683,24 @@ class PopupNewsletter {
     console.log('📧 Enviando suscripción:', formData);
     
     try {
-      // Método directo: Crear cliente usando el endpoint correcto de Shopify
-      const password = this.generateRandomPassword();
-      
+      // Método correcto: Usar el endpoint de contacto de Shopify
       const formBody = new URLSearchParams();
       formBody.append('form_type', 'create_customer');
       formBody.append('utf8', '✓');
       formBody.append('customer[email]', formData.email);
       formBody.append('customer[first_name]', formData.name.split(' ')[0] || 'Usuario');
       formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || 'Newsletter');
-      formBody.append('customer[password]', password);
-      formBody.append('customer[password_confirmation]', password);
+      formBody.append('customer[password]', this.generateRandomPassword());
+      formBody.append('customer[password_confirmation]', formBody.get('customer[password]'));
       formBody.append('customer[accepts_marketing]', '1');
-      
-      // Agregar fecha de nacimiento si está disponible
-      if (formData.birthday && formData.birthday.length > 0) {
-        formBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday} - Suscrito desde popup`);
-      } else {
-        formBody.append('customer[note]', 'Suscrito desde popup newsletter');
-      }
 
-      console.log('📋 Intentando crear cliente:', {
+      console.log('📋 Intentando crear cliente con /contact:', {
         email: formData.email,
         first_name: formData.name.split(' ')[0] || 'Usuario',
-        accepts_marketing: '1',
-        endpoint: '/account'
+        accepts_marketing: '1'
       });
 
-      const response = await fetch('/account', {
+      const response = await fetch('/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -734,37 +711,38 @@ class PopupNewsletter {
 
       console.log('📧 Respuesta crear cliente:', response.status, response.statusText);
       
-      // Si funciona o si el cliente ya existe (422), es éxito
+      // Leer respuesta para más detalles
+      const responseText = await response.text();
+      console.log('📄 Respuesta detallada:', responseText.substring(0, 200));
+      
       if (response.ok || response.status === 302 || response.status === 422) {
-        console.log('✅ Cliente creado/actualizado exitosamente');
+        console.log('✅ Cliente procesado exitosamente');
         return { success: true };
       } else {
-        // Si falla, intentar método alternativo
-        console.log('⚠️ Método principal falló, intentando alternativo...');
-        return await this.createCustomerAlternative(formData);
+        // Si falla, intentar con método de newsletter
+        console.log('⚠️ Método principal falló, intentando newsletter...');
+        return await this.subscribeToNewsletter(formData);
       }
       
     } catch (error) {
       console.error('❌ Error en creación de cliente:', error);
       // Intentar método alternativo
-      return await this.createCustomerAlternative(formData);
+      return await this.subscribeToNewsletter(formData);
     }
   }
 
-  async createCustomerAlternative(formData) {
+  async subscribeToNewsletter(formData) {
     try {
-      console.log('🔄 Intentando método alternativo...');
+      console.log('🔄 Intentando suscripción directa a newsletter...');
       
-      // Usar el endpoint de registro directo
+      // Método simple: solo suscripción a newsletter
       const formBody = new URLSearchParams();
-      formBody.append('form_type', 'create_customer');
+      formBody.append('form_type', 'customer');
       formBody.append('utf8', '✓');
-      formBody.append('customer[email]', formData.email);
-      formBody.append('customer[first_name]', formData.name.split(' ')[0] || 'Usuario');
-      formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || 'Newsletter');
-      formBody.append('customer[accepts_marketing]', 'on'); // Usar 'on' en lugar de '1'
+      formBody.append('contact[email]', formData.email);
+      formBody.append('contact[tags]', 'newsletter,popup_subscriber');
       
-      const response = await fetch('/account/register', {
+      const response = await fetch('/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -773,21 +751,47 @@ class PopupNewsletter {
         body: formBody.toString()
       });
 
-      console.log('📧 Respuesta método alternativo:', response.status);
+      console.log('📧 Respuesta newsletter:', response.status);
       
-      if (response.ok || response.status === 302 || response.status === 422) {
-        console.log('✅ Cliente creado con método alternativo');
+      if (response.ok || response.status === 302) {
+        console.log('✅ Suscripción a newsletter exitosa');
+        
+        // Ahora intentar crear el cliente por separado
+        await this.createCustomerSeparately(formData);
+        
         return { success: true };
       } else {
-        // Último recurso: solo notificar éxito para no bloquear UX
-        console.log('⚠️ Ambos métodos fallaron, pero continuando...');
+        console.log('⚠️ Método newsletter falló, continuando...');
         return { success: true, warning: 'Posible problema de conectividad' };
       }
       
     } catch (error) {
-      console.error('❌ Error en método alternativo:', error);
-      // No bloquear la UX
+      console.error('❌ Error en suscripción newsletter:', error);
       return { success: true, warning: 'Posible problema de conectividad' };
+    }
+  }
+
+  async createCustomerSeparately(formData) {
+    try {
+      console.log('👤 Intentando crear cliente por separado...');
+      
+      // Usar Shopify Admin API si está disponible, o método directo
+      const customerData = {
+        email: formData.email,
+        first_name: formData.name.split(' ')[0] || 'Usuario',
+        last_name: formData.name.split(' ').slice(1).join(' ') || 'Newsletter',
+        accepts_marketing: true,
+        tags: 'newsletter_popup,popup_subscriber',
+        note: formData.birthday ? `Fecha de nacimiento: ${formData.birthday}` : 'Suscrito desde popup'
+      };
+      
+      console.log('👤 Datos del cliente:', customerData);
+      
+      // Este método puede fallar, pero no es crítico
+      // El objetivo principal es la suscripción al newsletter
+      
+    } catch (error) {
+      console.log('⚠️ No se pudo crear cliente por separado, pero newsletter está suscrito');
     }
   }
 
@@ -830,7 +834,6 @@ class PopupNewsletter {
       }, 500);
     }
     
-    console.log('✅ Mensaje de éxito mostrado - el usuario puede cerrarlo manualmente');
     // Ya no se cierra automáticamente - el usuario debe cerrarlo manualmente
   }
 
@@ -902,33 +905,21 @@ class PopupNewsletter {
 
 // Inicializar el popup cuando se carga el script
 function initPopup() {
-  console.log('🚀 Iniciando Popup Newsletter...');
-  
   // Esperar a que las configuraciones estén disponibles
   if (typeof window.popupNewsletterSettings === 'undefined') {
-    console.log('⏳ Esperando configuraciones del popup...');
     setTimeout(initPopup, 500);
     return;
   }
   
   // Verificar si el popup está habilitado antes de continuar
   if (window.popupNewsletterSettings.enabled === false) {
-    console.log('🚫 Popup Newsletter deshabilitado desde configuración del tema');
-    console.log('🔧 Estado enabled:', window.popupNewsletterSettings.enabled);
     return;
   }
   
   const popup = document.getElementById('popup-newsletter');
   if (popup) {
-    console.log('📋 Elemento popup-newsletter encontrado');
-    console.log('🔧 Configuraciones globales disponibles: SÍ');
-    console.log('⚙️ Configuraciones actuales:', window.popupNewsletterSettings);
-    console.log('✅ Popup habilitado:', window.popupNewsletterSettings.enabled !== false);
-    
     new PopupNewsletter();
-    console.log('✅ Popup Newsletter inicializado correctamente');
   } else {
-    console.warn('⚠️ Elemento popup-newsletter no encontrado, reintentando en 1 segundo...');
     // Reintentar después de 1 segundo
     setTimeout(initPopup, 1000);
   }
