@@ -51,13 +51,16 @@ class PopupNewsletter {
   }
 
   applyDynamicSettings() {
+    console.log('🔍 Verificando configuraciones del popup...');
+    
     if (typeof window.popupNewsletterSettings === 'undefined') {
-      console.log('⚠️ Configuraciones del popup no encontradas');
+      console.warn('⚠️ window.popupNewsletterSettings no está definido');
       return;
     }
     
     const settings = window.popupNewsletterSettings;
-    console.log('✅ Aplicando configuraciones del popup:', settings);
+    console.log('✅ Configuraciones del popup encontradas:', settings);
+    console.log('🔄 Aplicando configuraciones dinámicas...');
     
     // Limpiar configuraciones anteriores
     this.clearDynamicElements();
@@ -158,6 +161,15 @@ class PopupNewsletter {
     if (successMessage) {
       successMessage.textContent = settings.successMessage || 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.';
     }
+    
+    console.log('✅ Configuraciones aplicadas exitosamente');
+    console.log('📋 Configuración final aplicada:', {
+      showDelay: this.config.showDelay,
+      showOnExit: this.config.showOnExit,
+      cookieExpiry: this.config.cookieExpiry,
+      title: titleElement ? titleElement.textContent : 'No encontrado',
+      buttonText: buttonElement ? buttonElement.textContent : 'No encontrado'
+    });
   }
 
   clearDynamicElements() {
@@ -563,12 +575,21 @@ class PopupNewsletter {
 
 // Inicializar el popup cuando se carga el script
 function initPopup() {
+  console.log('🚀 Iniciando Popup Newsletter...');
+  
   const popup = document.getElementById('popup-newsletter');
   if (popup) {
+    console.log('📋 Elemento popup-newsletter encontrado');
+    console.log('🔧 Configuraciones globales disponibles:', typeof window.popupNewsletterSettings !== 'undefined' ? 'SÍ' : 'NO');
+    
+    if (typeof window.popupNewsletterSettings !== 'undefined') {
+      console.log('⚙️ Configuraciones actuales:', window.popupNewsletterSettings);
+    }
+    
     new PopupNewsletter();
-    console.log('Popup Newsletter inicializado correctamente');
+    console.log('✅ Popup Newsletter inicializado correctamente');
   } else {
-    console.log('Elemento popup-newsletter no encontrado');
+    console.warn('⚠️ Elemento popup-newsletter no encontrado, reintentando en 1 segundo...');
     // Reintentar después de 1 segundo
     setTimeout(initPopup, 1000);
   }
@@ -580,3 +601,28 @@ document.addEventListener('DOMContentLoaded', initPopup);
 if (document.readyState !== 'loading') {
   initPopup();
 }
+
+// Función global para debugging - permite re-aplicar configuraciones desde la consola
+window.debugPopupSettings = function() {
+  console.log('🔧 DEBUG: Información del popup newsletter');
+  console.log('📋 Elemento popup existe:', !!document.getElementById('popup-newsletter'));
+  console.log('⚙️ Configuraciones globales:', window.popupNewsletterSettings);
+  console.log('🔗 Instancia global:', !!window.popupNewsletterInstance);
+  
+  if (window.popupNewsletterInstance) {
+    console.log('🔄 Re-aplicando configuraciones...');
+    window.popupNewsletterInstance.applyDynamicSettings();
+  } else {
+    console.warn('⚠️ No hay instancia del popup disponible');
+  }
+};
+
+// Función para mostrar el popup desde la consola (para testing)
+window.showPopupForTesting = function() {
+  if (window.popupNewsletterInstance) {
+    console.log('🧪 Mostrando popup para testing...');
+    window.popupNewsletterInstance.showPopup();
+  } else {
+    console.warn('⚠️ No hay instancia del popup disponible');
+  }
+};

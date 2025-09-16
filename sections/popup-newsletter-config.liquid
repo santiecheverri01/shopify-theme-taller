@@ -52,10 +52,14 @@
   });
   
   console.log('🔄 Configuraciones del popup actualizadas desde la sección:', window.popupNewsletterSettings);
+  console.log('🎯 Sección popup-newsletter-config cargada correctamente');
   
   // Forzar re-aplicación de configuraciones si el popup ya existe
   if (window.popupNewsletterInstance && window.popupNewsletterInstance.applyDynamicSettings) {
+    console.log('♻️ Re-aplicando configuraciones a instancia existente...');
     window.popupNewsletterInstance.applyDynamicSettings();
+  } else {
+    console.log('⏳ Instancia del popup no disponible aún, se aplicará cuando se inicialice');
   }
 </script>
 
