@@ -182,23 +182,6 @@ class PopupNewsletter {
       popup.style.backgroundColor = `rgba(0, 0, 0, ${overlayOpacity})`;
     }
     
-    console.log('🎨 Estilos generales aplicados');
-    console.log('📐 Cálculo de ancho dinámico:');
-    console.log('  - Dispositivo móvil:', isMobile ? 'Sí' : 'No');
-    console.log('  - Ancho de pantalla:', window.innerWidth + 'px');
-    if (!isMobile) {
-      console.log('  - Ancho máximo configurado:', settings.maxWidth + 'px');
-      console.log('  - Ancho de imagen:', settings.imageWidth + 'px');
-      console.log('  - Altura mínima:', (settings.minHeight || 320) + 'px');
-      console.log('  - Ancho final calculado:', dynamicWidth + 'px');
-      console.log('  - Proporción ancho/alto:', (dynamicWidth / (settings.minHeight || 320)).toFixed(2) + ':1');
-    } else {
-      console.log('  - En móvil: usando CSS responsivo');
-      if (settings.showImage && settings.imageUrl) {
-        console.log('  - Imagen de fondo aplicada:', settings.imageUrl);
-        console.log('  - Opacidad de overlay móvil:', (100 - (settings.mobileBgOpacity || 30)) + '%');
-      }
-    }
   }
 
   applyLayout(settings) {
@@ -211,7 +194,6 @@ class PopupNewsletter {
     // Aplicar nueva clase de layout
     layoutContainer.classList.add('layout-' + settings.layout.replace('_', '-'));
     
-    console.log('📐 Layout aplicado:', settings.layout);
   }
 
   applyLogo(settings) {
@@ -224,7 +206,7 @@ class PopupNewsletter {
         logoElement.style.maxHeight = settings.logoSize + 'px';
       }
       logoContainer.style.display = 'block';
-      console.log('🏷️ Logo configurado:', settings.logoUrl);
+      
     }
   }
 
@@ -242,10 +224,10 @@ class PopupNewsletter {
       }
       
       imageContainer.style.display = 'block';
-      console.log('🖼️ Imagen configurada:', settings.imageUrl, 'Ancho:', settings.imageWidth + 'px');
+      
     } else if (imageContainer) {
       imageContainer.style.display = 'none';
-      console.log('🖼️ Imagen ocultada');
+      
     }
   }
 
@@ -283,7 +265,7 @@ class PopupNewsletter {
       }
     }
     
-    console.log('✏️ Textos configurados');
+    
   }
 
   applyButton(settings) {
@@ -309,7 +291,7 @@ class PopupNewsletter {
       }
     }
     
-    console.log('🎯 Botón configurado');
+    
   }
 
   applySuccessMessage(settings) {
@@ -329,7 +311,7 @@ class PopupNewsletter {
       successIcon.setAttribute('fill', settings.successColor);
     }
     
-    console.log('✅ Mensaje de éxito configurado');
+    
   }
 
   clearDynamicElements() {
@@ -340,7 +322,7 @@ class PopupNewsletter {
     if (logoContainer) logoContainer.style.display = 'none';
     if (imageContainer) imageContainer.style.display = 'none';
     
-    console.log('🧹 Elementos dinámicos limpiados');
+    
   }
 
   bindEvents() {
