@@ -1475,6 +1475,13 @@
       },
       {
         "type": "checkbox",
+        "id": "popup_show_logo",
+        "label": "Mostrar logo de la tienda",
+        "default": false,
+        "info": "Muestra el logo principal de la tienda en la parte superior del popup"
+      },
+      {
+        "type": "checkbox",
         "id": "popup_show_image",
         "label": "Mostrar imagen",
         "default": false
@@ -1482,27 +1489,8 @@
       {
         "type": "image_picker",
         "id": "popup_image",
-        "label": "Imagen del popup"
-      },
-      {
-        "type": "range",
-        "id": "popup_image_width",
-        "min": 200,
-        "max": 600,
-        "step": 20,
-        "unit": "px",
-        "label": "Ancho de imagen",
-        "default": 400
-      },
-      {
-        "type": "range",
-        "id": "popup_image_height",
-        "min": 60,
-        "max": 200,
-        "step": 10,
-        "unit": "px",
-        "label": "Alto de imagen",
-        "default": 120
+        "label": "Imagen del popup",
+        "info": "La imagen se ajustará automáticamente al layout"
       },
       {
         "type": "text",

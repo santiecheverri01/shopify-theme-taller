@@ -76,8 +76,8 @@ class PopupNewsletter {
       const logoElement = document.getElementById('popup-logo-img');
       if (logoContainer && logoElement) {
         logoElement.src = settings.logoUrl;
-        logoElement.style.width = settings.logoWidth + 'px';
         logoContainer.style.display = 'block';
+        console.log('🏷️ Logo del popup configurado:', settings.logoUrl);
       }
     }
     
@@ -125,31 +125,7 @@ class PopupNewsletter {
       subtitleElement.textContent = settings.subtitle || 'Recibe ofertas exclusivas y mantente al día con nuestras novedades';
     }
     
-    // Configurar beneficios
-    if (!settings.showBenefits) {
-      const benefitsContainer = document.getElementById('popup-benefits');
-      if (benefitsContainer) {
-        benefitsContainer.style.display = 'none';
-      }
-    } else {
-      // Beneficio 1
-      const benefit1Icon = document.getElementById('benefit-1-icon');
-      const benefit1Text = document.getElementById('benefit-1-text');
-      if (benefit1Icon) benefit1Icon.textContent = settings.benefit1Icon || '🎁';
-      if (benefit1Text) benefit1Text.textContent = settings.benefit1Text || 'Descuentos exclusivos';
-      
-      // Beneficio 2
-      const benefit2Icon = document.getElementById('benefit-2-icon');
-      const benefit2Text = document.getElementById('benefit-2-text');
-      if (benefit2Icon) benefit2Icon.textContent = settings.benefit2Icon || '👕';
-      if (benefit2Text) benefit2Text.textContent = settings.benefit2Text || 'Nuevas colecciones';
-      
-      // Beneficio 3
-      const benefit3Icon = document.getElementById('benefit-3-icon');
-      const benefit3Text = document.getElementById('benefit-3-text');
-      if (benefit3Icon) benefit3Icon.textContent = settings.benefit3Icon || '🎂';
-      if (benefit3Text) benefit3Text.textContent = settings.benefit3Text || 'Sorpresa de cumpleaños';
-    }
+    // Los beneficios han sido eliminados del popup
     
     // Configurar botón
     const buttonElement = document.getElementById('popup-btn-text');
@@ -188,6 +164,8 @@ class PopupNewsletter {
     
     if (logoContainer) logoContainer.style.display = 'none';
     if (imageContainer) imageContainer.style.display = 'none';
+    
+    console.log('🧹 Elementos dinámicos limpiados');
   }
 
   bindEvents() {

@@ -12,41 +12,31 @@
         </svg>
       </button>
       
-      <div class="popup-header">
-        <!-- Logo del popup -->
-        <div class="popup-logo" id="popup-logo-container" style="display: none;">
-          <img id="popup-logo-img" class="popup-logo-img" alt="Logo">
-        </div>
-        
-        <!-- Imagen de header (configurable dinámicamente) -->
-        <div class="popup-image" id="popup-image-container" style="display: none;">
-          <img id="popup-banner-img" class="popup-banner-img" alt="Newsletter">
-        </div>
-        
-        <h2 class="popup-title" id="popup-title">
-          <span class="title-icon" id="popup-title-icon">✨</span>
-          <span id="popup-title-text">¡Únete a nuestra comunidad!</span>
-        </h2>
-        <p class="popup-subtitle" id="popup-subtitle">Recibe ofertas exclusivas y mantente al día con nuestras novedades</p>
-        
-        <!-- Beneficios visuales -->
-        <div class="popup-benefits" id="popup-benefits">
-          <div class="benefit-item" id="benefit-1">
-            <span class="benefit-icon" id="benefit-1-icon">🎁</span>
-            <span id="benefit-1-text">Descuentos exclusivos</span>
-          </div>
-          <div class="benefit-item" id="benefit-2">
-            <span class="benefit-icon" id="benefit-2-icon">👕</span>
-            <span id="benefit-2-text">Nuevas colecciones</span>
-          </div>
-          <div class="benefit-item" id="benefit-3">
-            <span class="benefit-icon" id="benefit-3-icon">🎂</span>
-            <span id="benefit-3-text">Sorpresa de cumpleaños</span>
-          </div>
-        </div>
+      <!-- Logo del popup en la parte superior -->
+      <div class="popup-logo-header" id="popup-logo-container" style="display: none;">
+        <img id="popup-logo-img" class="popup-logo-img" alt="Logo">
       </div>
+      
+      <div class="popup-layout">
+        <!-- Columna izquierda - Imagen -->
+        <div class="popup-left-column">
+          <!-- Imagen de header (configurable dinámicamente) -->
+          <div class="popup-image" id="popup-image-container" style="display: none;">
+            <img id="popup-banner-img" class="popup-banner-img" alt="Newsletter">
+          </div>
+        </div>
+        
+        <!-- Columna derecha - Contenido -->
+        <div class="popup-right-column">
+          <div class="popup-header">
+            <h2 class="popup-title" id="popup-title">
+              <span class="title-icon" id="popup-title-icon">✨</span>
+              <span id="popup-title-text">¡Únete a nuestra comunidad!</span>
+            </h2>
+            <p class="popup-subtitle" id="popup-subtitle">Recibe ofertas exclusivas y mantente al día con nuestras novedades</p>
+          </div>
 
-      <form class="popup-form" id="popup-newsletter-form" novalidate>
+          <form class="popup-form" id="popup-newsletter-form" novalidate>
         <div class="form-group">
           <label for="popup-name" class="form-label">Nombre *</label>
           <input 
@@ -111,18 +101,20 @@
             Enviando...
           </span>
         </button>
-      </form>
+          </form>
 
-      <div class="popup-success" id="popup-success" style="display: none;">
-        <div class="success-icon">
-          <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-            <circle cx="30" cy="30" r="30" fill="#10B981"/>
-            <path d="M20 30L27 37L40 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 id="popup-success-title">¡Gracias por suscribirte!</h3>
-        <p id="popup-success-message">Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
-      </div>
+          <div class="popup-success" id="popup-success" style="display: none;">
+            <div class="success-icon">
+              <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                <circle cx="30" cy="30" r="30" fill="#10B981"/>
+                <path d="M20 30L27 37L40 24" stroke="white" stroke="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 id="popup-success-title">¡Gracias por suscribirte!</h3>
+            <p id="popup-success-message">Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
+          </div>
+        </div> <!-- Cierre popup-right-column -->
+      </div> <!-- Cierre popup-layout -->
     </div>
   </div>
 </div>
@@ -173,6 +165,39 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
+  .popup-layout {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+  }
+
+  .popup-left-column {
+    flex: 0 0 auto;
+    min-width: 200px;
+    max-width: 300px;
+  }
+
+  .popup-right-column {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .popup-logo-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  .popup-logo-header .popup-logo-img {
+    height: auto;
+    max-height: 50px;
+    width: auto;
+    max-width: 200px;
+    display: inline-block;
+    object-fit: contain;
+  }
+
   .popup-close {
     position: absolute;
     top: 16px;
@@ -214,17 +239,18 @@
   }
 
   .popup-image {
-    margin-bottom: 24px;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
 
   .popup-banner-img {
     width: 100%;
+    height: auto;
     object-fit: cover;
     display: block;
-    height: auto; /* Conservar ratio automáticamente */
+    border-radius: 12px;
   }
 
   /* Tamaños específicos para conservar ratio */
@@ -272,29 +298,6 @@
     line-height: 1.5;
   }
 
-  .popup-benefits {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .benefit-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    font-size: 12px;
-    color: #6B7280;
-    min-width: 80px;
-  }
-
-  .benefit-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
-    display: block;
-  }
 
   .form-group {
     margin-bottom: 24px;
@@ -457,6 +460,23 @@
   }
 
   /* Responsive */
+  @media (max-width: 768px) {
+    .popup-layout {
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .popup-left-column {
+      min-width: auto;
+      max-width: none;
+      width: 100%;
+    }
+    
+    .popup-right-column {
+      min-width: auto;
+    }
+  }
+
   @media (max-width: 640px) {
     .popup-content {
       padding: 24px 20px;
@@ -468,6 +488,10 @@
     
     .popup-subtitle {
       font-size: 14px;
+    }
+    
+    .popup-layout {
+      gap: 20px;
     }
   }
 </style>
