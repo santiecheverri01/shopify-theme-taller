@@ -354,11 +354,12 @@
         // Imagen
         showImage: {{ settings.popup_show_image | default: false }},
         {% if settings.popup_image %}
-          imageUrl: '{{ settings.popup_image | image_url: width: settings.popup_image_width | default: 180 }}',
+          imageUrl: '{{ settings.popup_image | image_url: width: settings.popup_image_width | default: 280 }}',
         {% else %}
           imageUrl: null,
         {% endif %}
-        imageWidth: {{ settings.popup_image_width | default: 180 }},
+        imageWidth: {{ settings.popup_image_width | default: 280 }},
+        mobileBgOpacity: {{ settings.popup_mobile_bg_opacity | default: 30 }},
         
         // Título
         title: {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},

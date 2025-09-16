@@ -1643,6 +1643,17 @@
         "default": 280
       },
       {
+        "type": "range",
+        "id": "popup_mobile_bg_opacity",
+        "min": 10,
+        "max": 80,
+        "step": 5,
+        "unit": "%",
+        "label": "📱 Opacidad de imagen de fondo (móvil)",
+        "default": 30,
+        "info": "En móvil, la imagen se usa como fondo con esta opacidad"
+      },
+      {
         "type": "header",
         "content": "✏️ Título del Popup"
       },

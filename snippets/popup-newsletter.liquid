@@ -498,37 +498,104 @@
 
   /* Responsive */
   @media (max-width: 768px) {
+    .popup-container {
+      margin: 15px !important;
+      max-width: calc(100vw - 30px) !important;
+      width: calc(100vw - 30px) !important;
+    }
+    
+    .popup-content {
+      position: relative;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    .popup-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, var(--mobile-overlay-opacity, 0.9));
+      border-radius: inherit;
+      z-index: 1;
+    }
+    
+    .popup-content > * {
+      position: relative;
+      z-index: 2;
+    }
+    
     .popup-layout {
-      flex-direction: column;
-      gap: 24px;
+      flex-direction: column !important;
+      gap: 16px;
+      min-height: auto !important;
     }
     
-    .popup-left-column {
-      min-width: auto;
-      max-width: none;
-      width: 100%;
+    /* Ocultar imagen en móvil ya que se usa como fondo */
+    .popup-image-container {
+      display: none !important;
     }
     
-    .popup-right-column {
-      min-width: auto;
+    .popup-content-container {
+      min-width: auto !important;
+      text-align: center;
+    }
+    
+    .popup-logo-header .popup-logo-img {
+      max-height: 40px !important;
     }
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 480px) {
+    .popup-container {
+      margin: 10px !important;
+      max-width: calc(100vw - 20px) !important;
+      width: calc(100vw - 20px) !important;
+    }
+    
     .popup-content {
-      padding: 24px 20px;
-    }
-    
-    .popup-title {
-      font-size: 20px;
-    }
-    
-    .popup-subtitle {
-      font-size: 14px;
+      padding: 16px !important;
     }
     
     .popup-layout {
-      gap: 20px;
+      gap: 12px !important;
+    }
+    
+    .popup-banner-img {
+      max-height: 150px !important;
+    }
+    
+    .popup-title {
+      font-size: 18px !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .popup-subtitle {
+      font-size: 13px !important;
+      margin-bottom: 16px !important;
+    }
+    
+    .popup-form {
+      gap: 12px !important;
+    }
+    
+    .popup-input {
+      padding: 12px 16px !important;
+      font-size: 16px !important; /* Evita zoom en iOS */
+    }
+    
+    .popup-submit-btn {
+      padding: 14px 20px !important;
+      font-size: 16px !important;
+    }
+    
+    .popup-logo-header {
+      margin-bottom: 12px !important;
+      padding-bottom: 12px !important;
     }
   }
 </style>
+

@@ -114,30 +114,39 @@ class PopupNewsletter {
     const popupContent = this.popup?.querySelector('.popup-content');
     const popupLayout = document.getElementById('popup-layout');
     
-    // Calcular ancho dinámico basado en la imagen
+    // Detectar si estamos en móvil
+    const isMobile = window.innerWidth <= 768;
+    
+    // Calcular ancho dinámico basado en la imagen (solo en desktop)
     let dynamicWidth = settings.maxWidth || 800;
     
-    // Si hay imagen y está en layout horizontal, ajustar el ancho
-    if (settings.showImage && settings.imageWidth && 
-        (settings.layout === 'image-left' || settings.layout === 'image-right')) {
-      // Ancho de imagen + contenido mínimo + padding + gap
-      const contentMinWidth = 380; // Ancho mínimo para el contenido de texto
-      const totalPadding = (settings.padding || 24) * 2;
-      const layoutGap = settings.gap || 24;
+    if (!isMobile) {
+      // Si hay imagen y está en layout horizontal, ajustar el ancho
+      if (settings.showImage && settings.imageWidth && 
+          (settings.layout === 'image-left' || settings.layout === 'image-right')) {
+        // Ancho de imagen + contenido mínimo + padding + gap
+        const contentMinWidth = 380; // Ancho mínimo para el contenido de texto
+        const totalPadding = (settings.padding || 24) * 2;
+        const layoutGap = settings.gap || 24;
+        
+        dynamicWidth = settings.imageWidth + contentMinWidth + totalPadding + layoutGap;
+      }
       
-      dynamicWidth = settings.imageWidth + contentMinWidth + totalPadding + layoutGap;
+      // Asegurar que sea SIEMPRE más ancho que alto (proporción 2.5:1 mínimo)
+      const minHeight = settings.minHeight || 320;
+      const minWidthRatio = minHeight * 2.5;
+      if (dynamicWidth < minWidthRatio) {
+        dynamicWidth = minWidthRatio;
+      }
     }
     
-    // Asegurar que sea SIEMPRE más ancho que alto (proporción 2.5:1 mínimo)
-    const minHeight = settings.minHeight || 320;
-    const minWidthRatio = minHeight * 2.5;
-    if (dynamicWidth < minWidthRatio) {
-      dynamicWidth = minWidthRatio;
-    }
-    
-    if (popupContainer) {
+    if (popupContainer && !isMobile) {
       popupContainer.style.maxWidth = dynamicWidth + 'px';
       popupContainer.style.width = 'auto';
+    } else if (popupContainer && isMobile) {
+      // En móvil, usar CSS responsivo
+      popupContainer.style.maxWidth = '';
+      popupContainer.style.width = '';
     }
     
     if (popupContent) {
@@ -149,6 +158,21 @@ class PopupNewsletter {
       }
       if (settings.padding) {
         popupContent.style.padding = settings.padding + 'px';
+      }
+      
+      // En móvil, aplicar imagen de fondo
+      if (isMobile && settings.showImage && settings.imageUrl) {
+        popupContent.style.backgroundImage = `url(${settings.imageUrl})`;
+        
+        // Aplicar opacidad del overlay
+        const overlay = popupContent.querySelector('::before') || popupContent;
+        const overlayOpacity = (100 - (settings.mobileBgOpacity || 30)) / 100;
+        
+        // Crear o actualizar el pseudo-elemento usando una clase CSS custom
+        popupContent.style.setProperty('--mobile-overlay-opacity', overlayOpacity);
+      } else if (isMobile) {
+        // Limpiar imagen de fondo si no hay imagen
+        popupContent.style.backgroundImage = 'none';
       }
     }
     
@@ -168,11 +192,21 @@ class PopupNewsletter {
     
     console.log('🎨 Estilos generales aplicados');
     console.log('📐 Cálculo de ancho dinámico:');
-    console.log('  - Ancho máximo configurado:', settings.maxWidth + 'px');
-    console.log('  - Ancho de imagen:', settings.imageWidth + 'px');
-    console.log('  - Altura mínima:', (settings.minHeight || 320) + 'px');
-    console.log('  - Ancho final calculado:', dynamicWidth + 'px');
-    console.log('  - Proporción ancho/alto:', (dynamicWidth / (settings.minHeight || 320)).toFixed(2) + ':1');
+    console.log('  - Dispositivo móvil:', isMobile ? 'Sí' : 'No');
+    console.log('  - Ancho de pantalla:', window.innerWidth + 'px');
+    if (!isMobile) {
+      console.log('  - Ancho máximo configurado:', settings.maxWidth + 'px');
+      console.log('  - Ancho de imagen:', settings.imageWidth + 'px');
+      console.log('  - Altura mínima:', (settings.minHeight || 320) + 'px');
+      console.log('  - Ancho final calculado:', dynamicWidth + 'px');
+      console.log('  - Proporción ancho/alto:', (dynamicWidth / (settings.minHeight || 320)).toFixed(2) + ':1');
+    } else {
+      console.log('  - En móvil: usando CSS responsivo');
+      if (settings.showImage && settings.imageUrl) {
+        console.log('  - Imagen de fondo aplicada:', settings.imageUrl);
+        console.log('  - Opacidad de overlay móvil:', (100 - (settings.mobileBgOpacity || 30)) + '%');
+      }
+    }
   }
 
   applyLayout(settings) {
