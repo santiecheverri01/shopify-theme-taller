@@ -1,0 +1,364 @@
+{% comment %}
+  Popup para recolectar información del usuario
+  Campos: Nombre, Correo, Fecha de nacimiento (DD/MM)
+{% endcomment %}
+
+<div id="popup-newsletter" class="popup-overlay" style="display: none;">
+  <div class="popup-container">
+    <div class="popup-content">
+      <button type="button" class="popup-close" aria-label="Cerrar popup">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      
+      <div class="popup-header">
+        <h2 class="popup-title">¡Únete a nuestra comunidad!</h2>
+        <p class="popup-subtitle">Recibe ofertas exclusivas y mantente al día con nuestras novedades</p>
+      </div>
+
+      <form class="popup-form" id="popup-newsletter-form" novalidate>
+        <div class="form-group">
+          <label for="popup-name" class="form-label">Nombre *</label>
+          <input 
+            type="text" 
+            id="popup-name" 
+            name="name" 
+            class="form-input" 
+            required
+            placeholder="Tu nombre completo"
+          >
+          <span class="error-message" id="name-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="popup-email" class="form-label">Correo electrónico *</label>
+          <input 
+            type="email" 
+            id="popup-email" 
+            name="email" 
+            class="form-input" 
+            required
+            placeholder="tu@email.com"
+          >
+          <span class="error-message" id="email-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="popup-birthday" class="form-label">Fecha de nacimiento</label>
+          <input 
+            type="text" 
+            id="popup-birthday" 
+            name="birthday" 
+            class="form-input" 
+            placeholder="DD/MM"
+            maxlength="5"
+            pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])$"
+          >
+          <span class="error-message" id="birthday-error"></span>
+          <small class="form-help">Formato: DD/MM (ej: 15/03)</small>
+        </div>
+
+        <div class="form-group form-checkbox">
+          <label class="checkbox-container">
+            <input type="checkbox" id="popup-consent" name="consent" required>
+            <span class="checkmark"></span>
+            <span class="checkbox-text">
+              Acepto recibir comunicaciones promocionales y he leído la 
+              <a href="/pages/politicas" target="_blank">política de privacidad</a> *
+            </span>
+          </label>
+          <span class="error-message" id="consent-error"></span>
+        </div>
+
+        <button type="submit" class="popup-submit-btn">
+          <span class="btn-text">Suscribirme</span>
+          <span class="btn-loading" style="display: none;">
+            <svg class="spinner" width="20" height="20" viewBox="0 0 20 20">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="50.265" stroke-dashoffset="50.265">
+                <animate attributeName="stroke-dasharray" dur="2s" values="0 50.265;25.133 25.133;0 50.265" repeatCount="indefinite"/>
+                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-25.133;-50.265" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            Enviando...
+          </span>
+        </button>
+      </form>
+
+      <div class="popup-success" id="popup-success" style="display: none;">
+        <div class="success-icon">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <circle cx="30" cy="30" r="30" fill="#10B981"/>
+            <path d="M20 30L27 37L40 24" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>¡Gracias por suscribirte!</h3>
+        <p>Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .popup-container {
+    position: relative;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.3s ease;
+  }
+
+  .popup-overlay.show .popup-container {
+    transform: translateY(0) scale(1);
+  }
+
+  .popup-content {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6B7280;
+    transition: all 0.2s ease;
+  }
+
+  .popup-close:hover {
+    background: #F3F4F6;
+    color: #374151;
+  }
+
+  .popup-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .popup-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+  }
+
+  .popup-subtitle {
+    color: #6B7280;
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: white;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-input.error {
+    border-color: #EF4444;
+  }
+
+  .form-help {
+    display: block;
+    color: #6B7280;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .error-message {
+    display: block;
+    color: #EF4444;
+    font-size: 12px;
+    margin-top: 4px;
+    min-height: 16px;
+  }
+
+  .form-checkbox {
+    margin-bottom: 32px;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .checkbox-container input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #E5E7EB;
+    border-radius: 4px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-top: 2px;
+  }
+
+  .checkbox-container input[type="checkbox"]:checked + .checkmark {
+    background: #3B82F6;
+    border-color: #3B82F6;
+  }
+
+  .checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+    content: "✓";
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .checkbox-text {
+    color: #374151;
+  }
+
+  .checkbox-text a {
+    color: #3B82F6;
+    text-decoration: underline;
+  }
+
+  .popup-submit-btn {
+    width: 100%;
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .popup-submit-btn:hover {
+    background: #1F2937;
+    transform: translateY(-1px);
+  }
+
+  .popup-submit-btn:disabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .popup-success {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .success-icon {
+    margin-bottom: 24px;
+  }
+
+  .popup-success h3 {
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+  }
+
+  .popup-success p {
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .popup-content {
+      padding: 24px 20px;
+    }
+    
+    .popup-title {
+      font-size: 20px;
+    }
+    
+    .popup-subtitle {
+      font-size: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,69 @@
+<div class="section-homepage-video">
+    <video autoplay muted loop playsinline class="video-homepage" id="homepage-video">
+      <!-- The source will be dynamically set via JavaScript -->
+    </video>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Video",
+  "class": "index-section index-section--flush",
+  "settings": [],
+  "presets": [{
+    "name": "Collection Videos",
+    "category": "Text"
+  }]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-homepage-video {
+  width: 100%;
+  max-width: 100vw;
+  height: 130vh; /* Ajuste de la altura para pantallas grandes */
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+  position: relative;
+}
+
+.video-homepage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajusta el video para cubrir el contenedor sin distorsionarse */
+  object-position: center; /* Centra el video en el contenedor */
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 768px) {
+  .section-homepage-video {
+    height: 50vh; /* Ocupa el 40% de la altura de la ventana en dispositivos móviles */
+  }
+
+  .video-homepage {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+{% endstylesheet %}
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', function() {
+  var video = document.getElementById('homepage-video');
+
+  // Define the sources for desktop and mobile
+  var desktopVideo = "https://cdn.shopify.com/videos/c/o/v/5d6aee7bda1144a58c2c6999d150fd18.mp4";
+  var mobileVideo = "https://cdn.shopify.com/videos/c/o/v/5d6aee7bda1144a58c2c6999d150fd18.mp4";
+
+  // Determine screen size and set the appropriate video source
+  var videoSource = window.innerWidth >= 769 ? desktopVideo : mobileVideo;
+
+  var sourceElement = document.createElement('source');
+  sourceElement.src = videoSource;
+  sourceElement.type = "video/mp4";
+
+  // Append the source to the video element
+  video.appendChild(sourceElement);
+
+  // Load the video
+  video.load();
+});
+{% endjavascript %}

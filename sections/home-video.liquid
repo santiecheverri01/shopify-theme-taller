@@ -1,0 +1,96 @@
+<div class="section-homepage-video">
+  <a href="https://taller.store/collections/cualquier-parte">
+    <video autoplay muted loop playsinline class="video-homepage" id="homepage-video">
+      <!-- La fuente del video se agregará con JavaScript -->
+    </video>
+  </a>
+</div>
+
+{% schema %}
+{
+  "name": "Homepage Video",
+  "class": "index-section index-section--flush",
+  "settings": [],
+  "presets": [{
+    "name": "Homepage Videos",
+    "category": "Text"
+  }]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-homepage-video {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  position: relative;
+  /* Altura para la vista de escritorio */
+  height: 90vh; /* Ocupa el 90% de la altura de la ventana */
+  background-color: #000; /* Color de fondo mientras carga el video */
+}
+
+.video-homepage {
+  width: 100%;
+  height: 100%; /* El video ocupa el 100% de su contenedor */
+  object-fit: cover;
+  
+  /* --- ESTA ES LA CLAVE --- */
+  /* Ajusta el valor vertical (el segundo) para cambiar el encuadre. */
+  /* 0% es la parte superior, 50% es el centro, 100% es la parte inferior. */
+  /* Prueba con valores como 'center 20%' o 'center top' para ver la parte de arriba. */
+  object-position: center 25%;
+}
+
+/* Media Query para dispositivos móviles */
+@media (max-width: 768px) {
+  .section-homepage-video {
+    /* Ajusta la altura para móviles si es necesario */
+    height: 70vh;
+  }
+  .video-homepage {
+    /* Puedes definir una posición diferente para móviles si el encuadre cambia */
+    object-position: center center; /* En móvil, quizás el centro funciona mejor */
+  }
+}
+{% endstylesheet %}
+
+{% javascript %}
+(function() {
+  var videoElement = document.getElementById('homepage-video');
+  if (!videoElement) return;
+
+  var desktopVideoSrc = "https://cdn.shopify.com/videos/c/o/v/a660213057324dd296aca0cd7596dea2.mp4";
+  var mobileVideoSrc = "https://cdn.shopify.com/videos/c/o/v/aedc7baa601c453baf34b4ffe51d4960.mp4";
+  var currentSrc = '';
+
+  function setVideoSource() {
+    var newSrc = window.innerWidth >= 769 ? desktopVideoSrc : mobileVideoSrc;
+
+    // Solo cambia la fuente si es diferente para evitar recargas innecesarias
+    if (newSrc !== currentSrc) {
+      currentSrc = newSrc;
+      // Elimina las fuentes anteriores si existen
+      while (videoElement.firstChild) {
+        videoElement.removeChild(videoElement.firstChild);
+      }
+      
+      var sourceElement = document.createElement('source');
+      sourceElement.src = newSrc;
+      sourceElement.type = "video/mp4";
+      
+      videoElement.appendChild(sourceElement);
+      videoElement.load();
+      videoElement.play().catch(error => {
+        // La reproducción automática puede fallar en algunos navegadores, es normal
+        console.log("Autoplay prevented: ", error);
+      });
+    }
+  }
+
+  // Ejecuta la función al cargar la página
+  document.addEventListener('DOMContentLoaded', setVideoSource);
+  
+  // Y también cuando se redimensiona la ventana
+  window.addEventListener('resize', setVideoSource);
+})();
+{% endjavascript %}
