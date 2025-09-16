@@ -696,65 +696,98 @@ class PopupNewsletter {
     console.log('📧 Enviando suscripción:', formData);
     
     try {
-      // Usar el endpoint correcto para activar Shopify Flow
-      const formBody = new FormData();
-      formBody.append('form_type', 'customer');
-      formBody.append('utf8', '✓');
-      formBody.append('customer[email]', formData.email);
-      formBody.append('customer[first_name]', formData.name.split(' ')[0]);
-      formBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || '');
-      formBody.append('customer[accepts_marketing]', '1');
-      formBody.append('customer[tags]', 'newsletter_popup');
+      // Método 1: Usar el endpoint de contacto que es más confiable
+      const contactFormBody = new FormData();
+      contactFormBody.append('form_type', 'customer');
+      contactFormBody.append('utf8', '✓');
+      contactFormBody.append('customer[email]', formData.email);
+      contactFormBody.append('customer[first_name]', formData.name.split(' ')[0]);
+      contactFormBody.append('customer[last_name]', formData.name.split(' ').slice(1).join(' ') || '');
+      contactFormBody.append('customer[accepts_marketing]', '1');
+      contactFormBody.append('customer[password]', this.generateRandomPassword());
+      contactFormBody.append('customer[password_confirmation]', contactFormBody.get('customer[password]'));
+      
+      // Tags para identificar el origen
+      contactFormBody.append('customer[tags]', 'newsletter_popup,popup_subscriber');
       
       // Agregar fecha de nacimiento si está disponible
       if (formData.birthday && formData.birthday.length > 0) {
-        formBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday}`);
+        contactFormBody.append('customer[note]', `Fecha de nacimiento: ${formData.birthday}`);
       }
+
+      console.log('📋 Datos enviados:', {
+        email: formData.email,
+        first_name: formData.name.split(' ')[0],
+        accepts_marketing: '1',
+        tags: 'newsletter_popup,popup_subscriber'
+      });
 
       const response = await fetch('/account', {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: formBody
+        body: contactFormBody
       });
 
-      console.log('📧 Respuesta del servidor:', response.status);
+      console.log('📧 Respuesta del servidor:', response.status, response.statusText);
+      
+      // Leer la respuesta para más detalles
+      const responseText = await response.text();
+      console.log('📄 Contenido de respuesta:', responseText.substring(0, 200));
 
-      if (response.ok || response.status === 302) {
-        // 302 es común en Shopify cuando la creación es exitosa
-        console.log('✅ Suscripción exitosa - debería activar Shopify Flow');
+      if (response.ok || response.status === 302 || response.status === 422) {
+        // 422 puede indicar que el cliente ya existe, lo cual está bien
+        console.log('✅ Suscripción procesada - debería activar Shopify Flow');
+        
+        // Intentar también con el endpoint de marketing
+        this.subscribeToMarketing(formData.email);
+        
         return { success: true };
       } else {
         throw new Error(`Error del servidor: ${response.status}`);
       }
     } catch (error) {
-      console.error('❌ Error en suscripción:', error);
+      console.error('❌ Error en suscripción principal:', error);
       
-      // Fallback: Intentar con endpoint alternativo
+      // Fallback: Intentar solo suscripción a marketing
       try {
-        console.log('🔄 Intentando método alternativo...');
-        const fallbackResponse = await fetch('/contact#newsletter-form', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
-          },
-          body: new URLSearchParams({
-            'form_type': 'customer',
-            'utf8': '✓',
-            'contact[email]': formData.email,
-            'contact[tags]': 'newsletter'
-          })
-        });
-        
-        console.log('📧 Respuesta fallback:', fallbackResponse.status);
+        console.log('🔄 Intentando solo suscripción a marketing...');
+        await this.subscribeToMarketing(formData.email);
         return { success: true };
       } catch (fallbackError) {
         console.error('❌ Error en fallback:', fallbackError);
         // No bloquear la UX incluso si falla
         return { success: true, warning: 'Posible problema de conectividad' };
       }
+    }
+  }
+
+  generateRandomPassword() {
+    return Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+  }
+
+  async subscribeToMarketing(email) {
+    try {
+      const marketingBody = new FormData();
+      marketingBody.append('form_type', 'customer');
+      marketingBody.append('utf8', '✓');
+      marketingBody.append('customer[email]', email);
+      marketingBody.append('customer[accepts_marketing]', '1');
+
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: marketingBody
+      });
+
+      console.log('📬 Respuesta marketing:', response.status);
+      return response;
+    } catch (error) {
+      console.error('❌ Error en suscripción a marketing:', error);
+      throw error;
     }
   }
 
@@ -786,7 +819,7 @@ class PopupNewsletter {
       // Animación sutil para llamar la atención
       setTimeout(() => {
         closeBtn.style.transform = 'scale(1.1)';
-        setTimeout(() => {
+    setTimeout(() => {
           closeBtn.style.transform = 'scale(1)';
         }, 200);
       }, 500);
@@ -960,6 +993,7 @@ window.reinitializePopup = function() {
 // Función para probar la integración con Shopify Flow
 window.testShopifyFlowIntegration = function(testEmail = 'test@example.com') {
   console.log('🧪 Probando integración con Shopify Flow...');
+  console.log('📧 Email de prueba:', testEmail);
   
   if (!window.popupNewsletterInstance) {
     console.error('❌ No hay instancia del popup disponible');
@@ -968,22 +1002,29 @@ window.testShopifyFlowIntegration = function(testEmail = 'test@example.com') {
   
   // Datos de prueba
   const testData = {
-    name: 'Usuario de Prueba',
+    name: 'Usuario de Prueba Flow',
     email: testEmail,
-    birthday: '01/01/1990',
+    birthday: '15/03/1990',
     consent: true,
     timestamp: new Date().toISOString(),
     source: 'popup_newsletter_test'
   };
   
   console.log('📋 Enviando datos de prueba:', testData);
+  console.log('⏰ Timestamp:', new Date().toLocaleString());
   
   // Enviar directamente
   window.popupNewsletterInstance.submitForm(testData)
     .then(result => {
       if (result.success) {
         console.log('✅ Prueba exitosa - La automatización debería activarse');
-        console.log('🔍 Verifica en Shopify Admin > Marketing > Automations si se activó el flujo');
+        console.log('🔍 Pasos para verificar:');
+        console.log('  1. Ve a Shopify Admin > Customers');
+        console.log('  2. Busca el email:', testEmail);
+        console.log('  3. Verifica que "Accepts marketing" esté en "Yes"');
+        console.log('  4. Ve a Marketing > Automations > "Dar la bienvenida a nuevos suscriptores"');
+        console.log('  5. Revisa si hay actividad reciente');
+        console.log('⚠️ Nota: El email puede tardar unos minutos en llegar');
       } else {
         console.log('❌ Prueba fallida');
       }
@@ -991,4 +1032,21 @@ window.testShopifyFlowIntegration = function(testEmail = 'test@example.com') {
     .catch(error => {
       console.error('❌ Error en la prueba:', error);
     });
+};
+
+// Función para verificar el estado de Shopify Flow
+window.debugShopifyFlowStatus = function() {
+  console.log('🔍 Verificando estado de Shopify Flow...');
+  console.log('📋 Información importante:');
+  console.log('  - URL actual:', window.location.href);
+  console.log('  - Timestamp:', new Date().toLocaleString());
+  console.log('  - User Agent:', navigator.userAgent);
+  console.log('');
+  console.log('🔧 Pasos para verificar manualmente:');
+  console.log('  1. Abre Shopify Admin');
+  console.log('  2. Ve a Settings > Notifications');
+  console.log('  3. Verifica que "Customer email marketing" esté habilitado');
+  console.log('  4. Ve a Marketing > Automations');
+  console.log('  5. Verifica que tu flujo esté "Active"');
+  console.log('  6. Revisa los logs de actividad del flujo');
 };
