@@ -1471,6 +1471,17 @@
     "settings": [
       {
         "type": "header",
+        "content": "🔧 Control General"
+      },
+      {
+        "type": "checkbox",
+        "id": "popup_enabled",
+        "label": "✅ Activar popup newsletter",
+        "default": true,
+        "info": "Activa o desactiva completamente el popup en toda la tienda"
+      },
+      {
+        "type": "header",
         "content": "⚙️ Comportamiento del Popup"
       },
       {
@@ -1538,12 +1549,12 @@
       {
         "type": "range",
         "id": "popup_max_width",
-        "min": 300,
-        "max": 800,
+        "min": 500,
+        "max": 900,
         "step": 20,
         "unit": "px",
         "label": "📏 Ancho máximo del popup",
-        "default": 480
+        "default": 700
       },
       {
         "type": "range",
@@ -1564,6 +1575,17 @@
         "unit": "px",
         "label": "↔️ Espacio entre imagen y contenido",
         "default": 24
+      },
+      {
+        "type": "range",
+        "id": "popup_min_height",
+        "min": 250,
+        "max": 500,
+        "step": 20,
+        "unit": "px",
+        "label": "📏 Altura mínima del popup",
+        "default": 320,
+        "info": "Altura mínima para que la imagen se vea proporcionada"
       },
       {
         "type": "range",
@@ -1613,12 +1635,12 @@
       {
         "type": "range",
         "id": "popup_image_width",
-        "min": 120,
-        "max": 300,
+        "min": 150,
+        "max": 400,
         "step": 10,
         "unit": "px",
         "label": "📐 Ancho de la imagen",
-        "default": 180
+        "default": 280
       },
       {
         "type": "header",
@@ -1629,19 +1651,6 @@
         "id": "popup_title",
         "label": "📝 Texto del título",
         "default": "¡Únete a nuestra comunidad!"
-      },
-      {
-        "type": "checkbox",
-        "id": "popup_show_title_icon",
-        "label": "Mostrar icono en título",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "popup_title_icon",
-        "label": "✨ Icono del título (emoji)",
-        "default": "✨",
-        "info": "Usa emojis como ✨ 🎉 💎 ⭐ 🎁"
       },
       {
         "type": "range",

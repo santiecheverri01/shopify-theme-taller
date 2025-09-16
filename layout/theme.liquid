@@ -330,6 +330,9 @@
     <script>
       // Configuración completa personalizable desde theme settings
       window.popupNewsletterSettings = {
+        // Control general
+        enabled: {{ settings.popup_enabled | default: true }},
+        
         // Comportamiento
         showDelay: {{ settings.popup_show_delay | default: 3 | times: 1000 }},
         showOnExit: {{ settings.popup_show_on_exit | default: true }},
@@ -337,9 +340,10 @@
         
         // Layout y posicionamiento
         layout: {{ settings.popup_layout | default: 'image_left' | json }},
-        maxWidth: {{ settings.popup_max_width | default: 480 }},
+        maxWidth: {{ settings.popup_max_width | default: 700 }},
         padding: {{ settings.popup_padding | default: 24 }},
         gap: {{ settings.popup_gap | default: 24 }},
+        minHeight: {{ settings.popup_min_height | default: 320 }},
         borderRadius: {{ settings.popup_border_radius | default: 16 }},
         
         // Logo
@@ -358,8 +362,6 @@
         
         // Título
         title: {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},
-        showTitleIcon: {{ settings.popup_show_title_icon | default: true }},
-        titleIcon: {{ settings.popup_title_icon | default: '✨' | json }},
         titleSize: {{ settings.popup_title_size | default: 24 }},
         titleColor: {{ settings.popup_title_color | default: '#111827' | json }},
         titleWeight: {{ settings.popup_title_weight | default: '700' | json }},

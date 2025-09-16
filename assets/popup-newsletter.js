@@ -27,6 +27,13 @@ class PopupNewsletter {
   }
 
   init() {
+    // Verificar si el popup está habilitado
+    if (typeof window.popupNewsletterSettings !== 'undefined' && 
+        window.popupNewsletterSettings.enabled === false) {
+      console.log('🚫 Popup newsletter deshabilitado desde configuración');
+      return;
+    }
+    
     // Esperar a que el DOM esté listo
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.setup());
@@ -36,6 +43,13 @@ class PopupNewsletter {
   }
 
   setup() {
+    // Doble verificación de que el popup esté habilitado
+    if (typeof window.popupNewsletterSettings !== 'undefined' && 
+        window.popupNewsletterSettings.enabled === false) {
+      console.log('🚫 Popup newsletter deshabilitado - cancelando setup');
+      return;
+    }
+    
     this.popup = document.getElementById('popup-newsletter');
     if (!this.popup) return;
 
@@ -116,8 +130,13 @@ class PopupNewsletter {
       }
     }
     
-    if (popupLayout && settings.gap) {
-      popupLayout.style.gap = settings.gap + 'px';
+    if (popupLayout) {
+      if (settings.gap) {
+        popupLayout.style.gap = settings.gap + 'px';
+      }
+      if (settings.minHeight) {
+        popupLayout.style.minHeight = settings.minHeight + 'px';
+      }
     }
     
     if (popup && settings.overlayOpacity !== undefined) {
@@ -175,20 +194,10 @@ class PopupNewsletter {
   applyTexts(settings) {
     // Título
     const titleElement = document.getElementById('popup-title-text');
-    const titleIconElement = document.getElementById('popup-title-icon');
     const titleContainer = document.getElementById('popup-title');
     
     if (titleElement) {
       titleElement.textContent = settings.title || '¡Únete a nuestra comunidad!';
-    }
-    
-    if (titleIconElement) {
-      if (settings.showTitleIcon) {
-        titleIconElement.textContent = settings.titleIcon || '✨';
-        titleIconElement.style.display = 'inline';
-      } else {
-        titleIconElement.style.display = 'none';
-      }
     }
     
     if (titleContainer) {
@@ -672,6 +681,13 @@ class PopupNewsletter {
 function initPopup() {
   console.log('🚀 Iniciando Popup Newsletter...');
   
+  // Verificar si el popup está habilitado antes de continuar
+  if (typeof window.popupNewsletterSettings !== 'undefined' && 
+      window.popupNewsletterSettings.enabled === false) {
+    console.log('🚫 Popup Newsletter deshabilitado desde configuración del tema');
+    return;
+  }
+  
   const popup = document.getElementById('popup-newsletter');
   if (popup) {
     console.log('📋 Elemento popup-newsletter encontrado');
@@ -679,6 +695,7 @@ function initPopup() {
     
     if (typeof window.popupNewsletterSettings !== 'undefined') {
       console.log('⚙️ Configuraciones actuales:', window.popupNewsletterSettings);
+      console.log('✅ Popup habilitado:', window.popupNewsletterSettings.enabled !== false);
     }
     
     new PopupNewsletter();
@@ -702,7 +719,13 @@ window.debugPopupSettings = function() {
   console.log('🔧 DEBUG: Información del popup newsletter');
   console.log('📋 Elemento popup existe:', !!document.getElementById('popup-newsletter'));
   console.log('⚙️ Configuraciones globales:', window.popupNewsletterSettings);
+  console.log('✅ Popup habilitado:', window.popupNewsletterSettings?.enabled !== false);
   console.log('🔗 Instancia global:', !!window.popupNewsletterInstance);
+  
+  if (window.popupNewsletterSettings?.enabled === false) {
+    console.log('🚫 El popup está deshabilitado desde la configuración del tema');
+    return;
+  }
   
   if (window.popupNewsletterInstance) {
     console.log('🔄 Re-aplicando configuraciones...');
@@ -714,6 +737,11 @@ window.debugPopupSettings = function() {
 
 // Función para mostrar el popup desde la consola (para testing)
 window.showPopupForTesting = function() {
+  if (window.popupNewsletterSettings?.enabled === false) {
+    console.log('🚫 No se puede mostrar el popup - está deshabilitado desde la configuración del tema');
+    return;
+  }
+  
   if (window.popupNewsletterInstance) {
     console.log('🧪 Mostrando popup para testing...');
     window.popupNewsletterInstance.showPopup();
