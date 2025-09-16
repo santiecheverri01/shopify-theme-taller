@@ -34,16 +34,29 @@
 
           <form class="popup-form" id="popup-newsletter-form" novalidate>
         <div class="form-group">
-          <label for="popup-name" class="form-label">Nombre *</label>
+          <label for="popup-first-name" class="form-label">Nombre *</label>
           <input 
             type="text" 
-            id="popup-name" 
-            name="name" 
+            id="popup-first-name" 
+            name="first_name" 
             class="form-input" 
             required
-            placeholder="Tu nombre completo"
+            placeholder="Tu nombre"
           >
-          <span class="error-message" id="name-error"></span>
+          <span class="error-message" id="first-name-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="popup-last-name" class="form-label">Apellido *</label>
+          <input 
+            type="text" 
+            id="popup-last-name" 
+            name="last_name" 
+            class="form-input" 
+            required
+            placeholder="Tu apellido"
+          >
+          <span class="error-message" id="last-name-error"></span>
         </div>
 
         <div class="form-group">
