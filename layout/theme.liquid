@@ -328,32 +328,62 @@
     
     <!-- Configuración del popup desde theme settings -->
     <script>
-      // Configuración que incluye tanto defaults como theme settings
+      // Configuración completa personalizable desde theme settings
       window.popupNewsletterSettings = {
-        showDelay: 3000,
-        showOnExit: true,
-        cookieExpiry: 0,
+        // Comportamiento
+        showDelay: {{ settings.popup_show_delay | default: 3 | times: 1000 }},
+        showOnExit: {{ settings.popup_show_on_exit | default: true }},
+        cookieExpiry: {{ settings.popup_cookie_expiry | default: 7 }},
+        
+        // Layout y posicionamiento
+        layout: {{ settings.popup_layout | default: 'image_left' | json }},
+        maxWidth: {{ settings.popup_max_width | default: 480 }},
+        padding: {{ settings.popup_padding | default: 24 }},
+        gap: {{ settings.popup_gap | default: 24 }},
+        borderRadius: {{ settings.popup_border_radius | default: 16 }},
+        
+        // Logo
         showLogo: {{ settings.popup_show_logo | default: false }},
-        logoSource: 'theme_logo',
-        logoUrl: {% if settings.logo %}'{{ settings.logo | image_url: width: 120 }}'{% else %}null{% endif %},
-        logoWidth: 120,
+        logoUrl: {% if settings.logo %}'{{ settings.logo | image_url: width: 200 }}'{% else %}null{% endif %},
+        logoSize: {{ settings.popup_logo_size | default: 50 }},
+        
+        // Imagen
         showImage: {{ settings.popup_show_image | default: false }},
         {% if settings.popup_image %}
-          imageUrl: '{{ settings.popup_image | image_url: width: settings.popup_image_width | default: 400 }}',
+          imageUrl: '{{ settings.popup_image | image_url: width: settings.popup_image_width | default: 180 }}',
         {% else %}
           imageUrl: null,
         {% endif %}
-        imageWidth: {{ settings.popup_image_width | default: 400 }},
-        imageHeight: {{ settings.popup_image_height | default: 120 }},
-        imageSize: 'medium',
+        imageWidth: {{ settings.popup_image_width | default: 180 }},
+        
+        // Título
         title: {{ settings.popup_title | default: '¡Únete a nuestra comunidad!' | json }},
         showTitleIcon: {{ settings.popup_show_title_icon | default: true }},
         titleIcon: {{ settings.popup_title_icon | default: '✨' | json }},
+        titleSize: {{ settings.popup_title_size | default: 24 }},
+        titleColor: {{ settings.popup_title_color | default: '#111827' | json }},
+        titleWeight: {{ settings.popup_title_weight | default: '700' | json }},
+        
+        // Subtítulo
         subtitle: {{ settings.popup_subtitle | default: 'Recibe ofertas exclusivas y mantente al día con nuestras novedades' | json }},
-        buttonText: 'Suscribirme',
-        buttonColor: '#111827',
-        successTitle: '¡Gracias por suscribirte!',
-        successMessage: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.'
+        subtitleSize: {{ settings.popup_subtitle_size | default: 16 }},
+        subtitleColor: {{ settings.popup_subtitle_color | default: '#6B7280' | json }},
+        
+        // Botón
+        buttonText: {{ settings.popup_button_text | default: 'Suscribirme' | json }},
+        buttonBgColor: {{ settings.popup_button_bg_color | default: '#111827' | json }},
+        buttonTextColor: {{ settings.popup_button_text_color | default: '#FFFFFF' | json }},
+        buttonRadius: {{ settings.popup_button_radius | default: 8 }},
+        buttonSize: {{ settings.popup_button_size | default: 16 }},
+        
+        // Colores y fondo
+        bgColor: {{ settings.popup_bg_color | default: '#FFFFFF' | json }},
+        overlayOpacity: {{ settings.popup_overlay_opacity | default: 60 }},
+        
+        // Mensaje de éxito
+        successTitle: {{ settings.popup_success_title | default: '¡Gracias por suscribirte!' | json }},
+        successMessage: {{ settings.popup_success_message | default: 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.' | json }},
+        successColor: {{ settings.popup_success_color | default: '#10B981' | json }}
       };
       
       console.log('🎨 Configuraciones del theme aplicadas:', window.popupNewsletterSettings);

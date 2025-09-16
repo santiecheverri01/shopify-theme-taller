@@ -17,17 +17,14 @@
         <img id="popup-logo-img" class="popup-logo-img" alt="Logo">
       </div>
       
-      <div class="popup-layout">
-        <!-- Columna izquierda - Imagen -->
-        <div class="popup-left-column">
-          <!-- Imagen de header (configurable dinámicamente) -->
-          <div class="popup-image" id="popup-image-container" style="display: none;">
-            <img id="popup-banner-img" class="popup-banner-img" alt="Newsletter">
-          </div>
+      <div class="popup-layout" id="popup-layout">
+        <!-- Imagen del popup (posición dinámica) -->
+        <div class="popup-image-container" id="popup-image-container" style="display: none;">
+          <img id="popup-banner-img" class="popup-banner-img" alt="Newsletter">
         </div>
         
-        <!-- Columna derecha - Contenido -->
-        <div class="popup-right-column">
+        <!-- Contenido del popup -->
+        <div class="popup-content-container" id="popup-content-container">
           <div class="popup-header">
             <h2 class="popup-title" id="popup-title">
               <span class="title-icon" id="popup-title-icon">✨</span>
@@ -113,7 +110,7 @@
             <h3 id="popup-success-title">¡Gracias por suscribirte!</h3>
             <p id="popup-success-message">Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.</p>
           </div>
-        </div> <!-- Cierre popup-right-column -->
+        </div> <!-- Cierre popup-content-container -->
       </div> <!-- Cierre popup-layout -->
     </div>
   </div>
@@ -160,26 +157,49 @@
   .popup-content {
     background: white;
     border-radius: 16px;
-    padding: 32px;
+    padding: 24px;
     position: relative;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .popup-layout {
     display: flex;
-    gap: 32px;
+    gap: 24px;
     align-items: flex-start;
   }
 
-  .popup-left-column {
-    flex: 0 0 auto;
-    min-width: 200px;
-    max-width: 300px;
+  /* Layout: Imagen izquierda - Contenido derecha */
+  .popup-layout.layout-image-left {
+    flex-direction: row;
   }
 
-  .popup-right-column {
+  /* Layout: Imagen derecha - Contenido izquierda */
+  .popup-layout.layout-image-right {
+    flex-direction: row-reverse;
+  }
+
+  /* Layout: Imagen arriba - Contenido abajo */
+  .popup-layout.layout-image-top {
+    flex-direction: column;
+  }
+
+  /* Layout: Imagen abajo - Contenido arriba */
+  .popup-layout.layout-image-bottom {
+    flex-direction: column-reverse;
+  }
+
+  /* Layout: Solo contenido */
+  .popup-layout.layout-content-only .popup-image-container {
+    display: none !important;
+  }
+
+  .popup-image-container {
+    flex: 0 0 auto;
+  }
+
+  .popup-content-container {
     flex: 1;
-    min-width: 300px;
+    min-width: 250px;
   }
 
   .popup-logo-header {
@@ -238,11 +258,10 @@
     object-fit: contain;
   }
 
-  .popup-image {
+  .popup-image-container {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 100%;
   }
 
   .popup-banner-img {
@@ -251,6 +270,20 @@
     object-fit: cover;
     display: block;
     border-radius: 12px;
+  }
+
+  /* Ajustes específicos para layouts verticales */
+  .popup-layout.layout-image-top .popup-image-container,
+  .popup-layout.layout-image-bottom .popup-image-container {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* Ajustes específicos para layouts horizontales */
+  .popup-layout.layout-image-left .popup-image-container,
+  .popup-layout.layout-image-right .popup-image-container {
+    min-width: 120px;
+    max-width: 250px;
   }
 
   /* Tamaños específicos para conservar ratio */

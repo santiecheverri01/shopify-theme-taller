@@ -70,46 +70,118 @@ class PopupNewsletter {
     this.config.showOnExit = settings.showOnExit !== undefined ? settings.showOnExit : this.config.showOnExit;
     this.config.cookieExpiry = settings.cookieExpiry !== undefined ? settings.cookieExpiry : this.config.cookieExpiry;
     
+    // Aplicar estilos generales del popup
+    this.applyPopupStyles(settings);
+    
+    // Configurar layout
+    this.applyLayout(settings);
+    
     // Configurar logo
-    if (settings.showLogo && settings.logoUrl) {
-      const logoContainer = document.getElementById('popup-logo-container');
-      const logoElement = document.getElementById('popup-logo-img');
-      if (logoContainer && logoElement) {
-        logoElement.src = settings.logoUrl;
-        logoContainer.style.display = 'block';
-        console.log('🏷️ Logo del popup configurado:', settings.logoUrl);
-      }
-    }
+    this.applyLogo(settings);
     
     // Configurar imagen
-    if (settings.showImage && settings.imageUrl) {
-      const imageContainer = document.getElementById('popup-image-container');
-      const imageElement = document.getElementById('popup-banner-img');
-      if (imageContainer && imageElement) {
-        imageElement.src = settings.imageUrl;
-        
-        // Aplicar clase de tamaño para conservar ratio
-        imageElement.className = 'popup-banner-img popup-img-' + (settings.imageSize || 'medium');
-        
-        // Aplicar dimensiones específicas si están disponibles (desde theme settings)
-        if (settings.imageWidth) {
-          imageElement.style.maxWidth = settings.imageWidth + 'px';
-        }
-        if (settings.imageHeight) {
-          imageElement.style.maxHeight = settings.imageHeight + 'px';
-        }
-        
-        imageContainer.style.display = 'block';
-        console.log('🖼️ Imagen del popup configurada:', settings.imageUrl);
+    this.applyImage(settings);
+    
+    // Configurar textos
+    this.applyTexts(settings);
+    
+    // Configurar botón
+    this.applyButton(settings);
+    
+    // Configurar mensajes de éxito
+    this.applySuccessMessage(settings);
+    
+    console.log('✅ Todas las configuraciones aplicadas exitosamente');
+  }
+
+  applyPopupStyles(settings) {
+    const popup = document.getElementById('popup-newsletter');
+    const popupContainer = this.popup?.querySelector('.popup-container');
+    const popupContent = this.popup?.querySelector('.popup-content');
+    const popupLayout = document.getElementById('popup-layout');
+    
+    if (popupContainer && settings.maxWidth) {
+      popupContainer.style.maxWidth = settings.maxWidth + 'px';
+    }
+    
+    if (popupContent) {
+      if (settings.borderRadius !== undefined) {
+        popupContent.style.borderRadius = settings.borderRadius + 'px';
+      }
+      if (settings.bgColor) {
+        popupContent.style.backgroundColor = settings.bgColor;
+      }
+      if (settings.padding) {
+        popupContent.style.padding = settings.padding + 'px';
       }
     }
     
-    // Configurar título
+    if (popupLayout && settings.gap) {
+      popupLayout.style.gap = settings.gap + 'px';
+    }
+    
+    if (popup && settings.overlayOpacity !== undefined) {
+      const overlayOpacity = settings.overlayOpacity / 100;
+      popup.style.backgroundColor = `rgba(0, 0, 0, ${overlayOpacity})`;
+    }
+    
+    console.log('🎨 Estilos generales aplicados');
+  }
+
+  applyLayout(settings) {
+    const layoutContainer = document.getElementById('popup-layout');
+    if (!layoutContainer || !settings.layout) return;
+    
+    // Limpiar clases de layout anteriores
+    layoutContainer.classList.remove('layout-image-left', 'layout-image-right', 'layout-image-top', 'layout-image-bottom', 'layout-content-only');
+    
+    // Aplicar nueva clase de layout
+    layoutContainer.classList.add('layout-' + settings.layout.replace('_', '-'));
+    
+    console.log('📐 Layout aplicado:', settings.layout);
+  }
+
+  applyLogo(settings) {
+    const logoContainer = document.getElementById('popup-logo-container');
+    const logoElement = document.getElementById('popup-logo-img');
+    
+    if (settings.showLogo && settings.logoUrl && logoContainer && logoElement) {
+      logoElement.src = settings.logoUrl;
+      if (settings.logoSize) {
+        logoElement.style.maxHeight = settings.logoSize + 'px';
+      }
+      logoContainer.style.display = 'block';
+      console.log('🏷️ Logo configurado:', settings.logoUrl);
+    }
+  }
+
+  applyImage(settings) {
+    const imageContainer = document.getElementById('popup-image-container');
+    const imageElement = document.getElementById('popup-banner-img');
+    
+    if (settings.showImage && settings.imageUrl && imageContainer && imageElement) {
+      imageElement.src = settings.imageUrl;
+      
+      if (settings.imageWidth) {
+        imageContainer.style.width = settings.imageWidth + 'px';
+        imageContainer.style.maxWidth = settings.imageWidth + 'px';
+      }
+      
+      imageContainer.style.display = 'block';
+      console.log('🖼️ Imagen configurada:', settings.imageUrl);
+    }
+  }
+
+  applyTexts(settings) {
+    // Título
     const titleElement = document.getElementById('popup-title-text');
     const titleIconElement = document.getElementById('popup-title-icon');
+    const titleContainer = document.getElementById('popup-title');
+    
     if (titleElement) {
       titleElement.textContent = settings.title || '¡Únete a nuestra comunidad!';
     }
+    
     if (titleIconElement) {
       if (settings.showTitleIcon) {
         titleIconElement.textContent = settings.titleIcon || '✨';
@@ -119,42 +191,78 @@ class PopupNewsletter {
       }
     }
     
-    // Configurar subtítulo
+    if (titleContainer) {
+      if (settings.titleSize) {
+        titleContainer.style.fontSize = settings.titleSize + 'px';
+      }
+      if (settings.titleColor) {
+        titleContainer.style.color = settings.titleColor;
+      }
+      if (settings.titleWeight) {
+        titleContainer.style.fontWeight = settings.titleWeight;
+      }
+    }
+    
+    // Subtítulo
     const subtitleElement = document.getElementById('popup-subtitle');
     if (subtitleElement) {
       subtitleElement.textContent = settings.subtitle || 'Recibe ofertas exclusivas y mantente al día con nuestras novedades';
+      
+      if (settings.subtitleSize) {
+        subtitleElement.style.fontSize = settings.subtitleSize + 'px';
+      }
+      if (settings.subtitleColor) {
+        subtitleElement.style.color = settings.subtitleColor;
+      }
     }
     
-    // Los beneficios han sido eliminados del popup
-    
-    // Configurar botón
+    console.log('✏️ Textos configurados');
+  }
+
+  applyButton(settings) {
     const buttonElement = document.getElementById('popup-btn-text');
     const submitButton = document.getElementById('popup-submit-btn');
+    
     if (buttonElement) {
       buttonElement.textContent = settings.buttonText || 'Suscribirme';
     }
-    if (submitButton && settings.buttonColor) {
-      submitButton.style.background = settings.buttonColor;
+    
+    if (submitButton) {
+      if (settings.buttonBgColor) {
+        submitButton.style.backgroundColor = settings.buttonBgColor;
+      }
+      if (settings.buttonTextColor) {
+        submitButton.style.color = settings.buttonTextColor;
+      }
+      if (settings.buttonRadius !== undefined) {
+        submitButton.style.borderRadius = settings.buttonRadius + 'px';
+      }
+      if (settings.buttonSize) {
+        submitButton.style.fontSize = settings.buttonSize + 'px';
+      }
     }
     
-    // Configurar mensajes de éxito
+    console.log('🎯 Botón configurado');
+  }
+
+  applySuccessMessage(settings) {
     const successTitle = document.getElementById('popup-success-title');
     const successMessage = document.getElementById('popup-success-message');
+    const successIcon = document.querySelector('.popup-success .success-icon circle');
+    
     if (successTitle) {
       successTitle.textContent = settings.successTitle || '¡Gracias por suscribirte!';
     }
+    
     if (successMessage) {
       successMessage.textContent = settings.successMessage || 'Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada.';
     }
     
-    console.log('✅ Configuraciones aplicadas exitosamente');
-    console.log('📋 Configuración final aplicada:', {
-      showDelay: this.config.showDelay,
-      showOnExit: this.config.showOnExit,
-      cookieExpiry: this.config.cookieExpiry,
-      title: titleElement ? titleElement.textContent : 'No encontrado',
-      buttonText: buttonElement ? buttonElement.textContent : 'No encontrado'
-    });
+    if (successIcon && settings.successColor) {
+      successIcon.setAttribute('fill', settings.successColor);
+    }
+    
+    console.log('✅ Mensaje de éxito configurado');
   }
 
   clearDynamicElements() {
