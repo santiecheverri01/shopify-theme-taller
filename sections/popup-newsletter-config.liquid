@@ -68,17 +68,17 @@
       "type": "header",
       "content": "⚙️ Configuración del Comportamiento"
     },
-    {
-      "type": "range",
-      "id": "show_delay",
-      "min": 0,
-      "max": 10000,
-      "step": 500,
-      "unit": "ms",
-      "label": "⏱️ Tiempo antes de mostrar",
-      "default": 3000,
-      "info": "Tiempo en milisegundos (1000 = 1 segundo)"
-    },
+      {
+        "type": "range",
+        "id": "show_delay",
+        "min": 0,
+        "max": 9999,
+        "step": 500,
+        "unit": "ms",
+        "label": "⏱️ Tiempo antes de mostrar",
+        "default": 3000,
+        "info": "Tiempo en milisegundos (1000 = 1 segundo)"
+      },
     {
       "type": "checkbox",
       "id": "show_on_exit",
@@ -86,17 +86,17 @@
       "default": true,
       "info": "Mostrar popup cuando el usuario mueve el mouse fuera de la ventana"
     },
-    {
-      "type": "range",
-      "id": "cookie_expiry",
-      "min": 0,
-      "max": 30,
-      "step": 1,
-      "unit": "días",
-      "label": "🍪 Recordar por",
-      "default": 0,
-      "info": "0 = solo por sesión, 7 = una semana"
-    },
+      {
+        "type": "range",
+        "id": "cookie_expiry",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": "d",
+        "label": "🍪 Recordar por (días)",
+        "default": 0,
+        "info": "0 = solo por sesión, 7 = una semana"
+      },
     {
       "type": "header",
       "content": "🏷️ Logo del Popup"
