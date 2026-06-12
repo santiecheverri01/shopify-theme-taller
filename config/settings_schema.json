@@ -2,7 +2,7 @@
   {
     "name": "theme_info",
     "theme_name": "Dawn",
-    "theme_version": "15.2.0",
+    "theme_version": "15.4.1",
     "theme_author": "Shopify",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
@@ -112,8 +112,7 @@
         "type": "font_picker",
         "id": "type_header_font",
         "default": "assistant_n4",
-        "label": "t:settings_schema.typography.settings.type_header_font.label",
-        "info": "t:settings_schema.typography.settings.type_header_font.info"
+        "label": "t:settings_schema.typography.settings.type_header_font.label"
       },
       {
         "type": "range",
@@ -133,8 +132,7 @@
         "type": "font_picker",
         "id": "type_body_font",
         "default": "assistant_n4",
-        "label": "t:settings_schema.typography.settings.type_body_font.label",
-        "info": "t:settings_schema.typography.settings.type_body_font.info"
+        "label": "t:settings_schema.typography.settings.type_body_font.label"
       },
       {
         "type": "range",
@@ -1306,10 +1304,6 @@
     "name": "t:settings_schema.social-media.name",
     "settings": [
       {
-        "type": "header",
-        "content": "t:settings_schema.social-media.settings.header.content"
-      },
-      {
         "type": "text",
         "id": "social_facebook_link",
         "label": "t:settings_schema.social-media.settings.social_facebook_link.label",
@@ -1369,10 +1363,6 @@
     "name": "t:settings_schema.search_input.name",
     "settings": [
       {
-        "type": "header",
-        "content": "t:settings_schema.search_input.settings.header.content"
-      },
-      {
         "type": "checkbox",
         "id": "predictive_search_enabled",
         "default": true,
@@ -1397,10 +1387,6 @@
   {
     "name": "t:settings_schema.currency_format.name",
     "settings": [
-      {
-        "type": "header",
-        "content": "t:settings_schema.currency_format.settings.content"
-      },
       {
         "type": "paragraph",
         "content": "t:settings_schema.currency_format.settings.paragraph"
@@ -1463,355 +1449,6 @@
         "id": "cart_color_scheme",
         "label": "t:sections.all.colors.label",
         "default": "scheme-1"
-      }
-    ]
-  },
-  {
-    "name": "Popup Newsletter",
-    "settings": [
-      {
-        "type": "header",
-        "content": "🔧 Control General"
-      },
-      {
-        "type": "checkbox",
-        "id": "popup_enabled",
-        "label": "✅ Activar popup newsletter",
-        "default": true,
-        "info": "Activa o desactiva completamente el popup en toda la tienda"
-      },
-      {
-        "type": "header",
-        "content": "⚙️ Comportamiento del Popup"
-      },
-      {
-        "type": "range",
-        "id": "popup_show_delay",
-        "min": 0,
-        "max": 30,
-        "step": 1,
-        "unit": "s",
-        "label": "⏱️ Tiempo antes de mostrar",
-        "default": 3,
-        "info": "Segundos después de cargar la página"
-      },
-      {
-        "type": "checkbox",
-        "id": "popup_show_on_exit",
-        "label": "🚪 Mostrar al intentar salir",
-        "default": true,
-        "info": "Mostrar cuando el mouse sale de la ventana"
-      },
-      {
-        "type": "range",
-        "id": "popup_cookie_expiry",
-        "min": 0,
-        "max": 30,
-        "step": 1,
-        "unit": "d",
-        "label": "🍪 Recordar por (días)",
-        "default": 7,
-        "info": "0 = solo por sesión"
-      },
-      {
-        "type": "header",
-        "content": "🎨 Layout y Posicionamiento"
-      },
-      {
-        "type": "select",
-        "id": "popup_layout",
-        "label": "📐 Layout del popup",
-        "options": [
-          {
-            "value": "image_left",
-            "label": "Imagen izquierda - Contenido derecha"
-          },
-          {
-            "value": "image_right",
-            "label": "Imagen derecha - Contenido izquierda"
-          },
-          {
-            "value": "image_top",
-            "label": "Imagen arriba - Contenido abajo"
-          },
-          {
-            "value": "image_bottom",
-            "label": "Imagen abajo - Contenido arriba"
-          },
-          {
-            "value": "content_only",
-            "label": "Solo contenido (sin imagen)"
-          }
-        ],
-        "default": "image_left",
-        "info": "Posición de la imagen en relación al contenido"
-      },
-      {
-        "type": "range",
-        "id": "popup_max_width",
-        "min": 500,
-        "max": 900,
-        "step": 20,
-        "unit": "px",
-        "label": "📏 Ancho máximo del popup",
-        "default": 800
-      },
-      {
-        "type": "range",
-        "id": "popup_padding",
-        "min": 16,
-        "max": 48,
-        "step": 4,
-        "unit": "px",
-        "label": "📦 Espaciado interno del popup",
-        "default": 24
-      },
-      {
-        "type": "range",
-        "id": "popup_gap",
-        "min": 16,
-        "max": 48,
-        "step": 4,
-        "unit": "px",
-        "label": "↔️ Espacio entre imagen y contenido",
-        "default": 24
-      },
-      {
-        "type": "range",
-        "id": "popup_min_height",
-        "min": 300,
-        "max": 500,
-        "step": 20,
-        "unit": "px",
-        "label": "📏 Altura mínima del popup",
-        "default": 320,
-        "info": "Altura mínima para que la imagen se vea proporcionada"
-      },
-      {
-        "type": "range",
-        "id": "popup_border_radius",
-        "min": 0,
-        "max": 30,
-        "step": 2,
-        "unit": "px",
-        "label": "🔄 Redondeo de esquinas",
-        "default": 16
-      },
-      {
-        "type": "header",
-        "content": "🏷️ Logo de la Tienda"
-      },
-      {
-        "type": "checkbox",
-        "id": "popup_show_logo",
-        "label": "Mostrar logo de la tienda",
-        "default": false
-      },
-      {
-        "type": "range",
-        "id": "popup_logo_size",
-        "min": 30,
-        "max": 100,
-        "step": 5,
-        "unit": "px",
-        "label": "📏 Altura del logo",
-        "default": 50
-      },
-      {
-        "type": "header",
-        "content": "🖼️ Imagen del Popup"
-      },
-      {
-        "type": "checkbox",
-        "id": "popup_show_image",
-        "label": "Mostrar imagen",
-        "default": false
-      },
-      {
-        "type": "image_picker",
-        "id": "popup_image",
-        "label": "Imagen del popup"
-      },
-      {
-        "type": "range",
-        "id": "popup_image_width",
-        "min": 150,
-        "max": 400,
-        "step": 10,
-        "unit": "px",
-        "label": "📐 Ancho de la imagen",
-        "default": 280
-      },
-      {
-        "type": "range",
-        "id": "popup_mobile_bg_opacity",
-        "min": 10,
-        "max": 80,
-        "step": 5,
-        "unit": "%",
-        "label": "📱 Opacidad de imagen de fondo (móvil)",
-        "default": 30,
-        "info": "En móvil, la imagen se usa como fondo con esta opacidad"
-      },
-      {
-        "type": "header",
-        "content": "✏️ Título del Popup"
-      },
-      {
-        "type": "text",
-        "id": "popup_title",
-        "label": "📝 Texto del título",
-        "default": "¡Únete a nuestra comunidad!"
-      },
-      {
-        "type": "range",
-        "id": "popup_title_size",
-        "min": 18,
-        "max": 36,
-        "step": 2,
-        "unit": "px",
-        "label": "📏 Tamaño del título",
-        "default": 24
-      },
-      {
-        "type": "color",
-        "id": "popup_title_color",
-        "label": "🎨 Color del título",
-        "default": "#111827"
-      },
-      {
-        "type": "select",
-        "id": "popup_title_weight",
-        "label": "💪 Peso del título",
-        "options": [
-          {
-            "value": "400",
-            "label": "Normal"
-          },
-          {
-            "value": "600",
-            "label": "Semi-bold"
-          },
-          {
-            "value": "700",
-            "label": "Bold"
-          },
-          {
-            "value": "800",
-            "label": "Extra-bold"
-          }
-        ],
-        "default": "700"
-      },
-      {
-        "type": "header",
-        "content": "📄 Subtítulo del Popup"
-      },
-      {
-        "type": "textarea",
-        "id": "popup_subtitle",
-        "label": "📝 Texto del subtítulo",
-        "default": "Recibe ofertas exclusivas y mantente al día con nuestras novedades"
-      },
-      {
-        "type": "range",
-        "id": "popup_subtitle_size",
-        "min": 12,
-        "max": 20,
-        "step": 1,
-        "unit": "px",
-        "label": "📏 Tamaño del subtítulo",
-        "default": 16
-      },
-      {
-        "type": "color",
-        "id": "popup_subtitle_color",
-        "label": "🎨 Color del subtítulo",
-        "default": "#6B7280"
-      },
-      {
-        "type": "header",
-        "content": "🎯 Botón de Suscripción"
-      },
-      {
-        "type": "text",
-        "id": "popup_button_text",
-        "label": "📝 Texto del botón",
-        "default": "Suscribirme"
-      },
-      {
-        "type": "color",
-        "id": "popup_button_bg_color",
-        "label": "🎨 Color de fondo del botón",
-        "default": "#111827"
-      },
-      {
-        "type": "color",
-        "id": "popup_button_text_color",
-        "label": "🎨 Color del texto del botón",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "range",
-        "id": "popup_button_radius",
-        "min": 0,
-        "max": 20,
-        "step": 2,
-        "unit": "px",
-        "label": "🔄 Redondeo del botón",
-        "default": 8
-      },
-      {
-        "type": "range",
-        "id": "popup_button_size",
-        "min": 12,
-        "max": 20,
-        "step": 1,
-        "unit": "px",
-        "label": "📏 Tamaño del texto del botón",
-        "default": 16
-      },
-      {
-        "type": "header",
-        "content": "🎨 Colores y Fondo"
-      },
-      {
-        "type": "color",
-        "id": "popup_bg_color",
-        "label": "🎨 Color de fondo del popup",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "range",
-        "id": "popup_overlay_opacity",
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "unit": "%",
-        "label": "🌫️ Opacidad del fondo oscuro",
-        "default": 60
-      },
-      {
-        "type": "header",
-        "content": "✅ Mensaje de Éxito"
-      },
-      {
-        "type": "text",
-        "id": "popup_success_title",
-        "label": "🎉 Título de éxito",
-        "default": "¡Gracias por suscribirte!"
-      },
-      {
-        "type": "textarea",
-        "id": "popup_success_message",
-        "label": "💌 Mensaje de éxito",
-        "default": "Te hemos enviado un correo de confirmación. Revisa tu bandeja de entrada."
-      },
-      {
-        "type": "color",
-        "id": "popup_success_color",
-        "label": "🎨 Color del mensaje de éxito",
-        "default": "#10B981"
       }
     ]
   }

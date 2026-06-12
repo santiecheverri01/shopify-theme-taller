@@ -96,7 +96,7 @@
                   "
                   src="{{ card_product.media[1] | image_url: width: 533 }}"
                   sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
-                  alt=""
+                  alt="{{ card_product.media[1].alt | escape }}"
                   class="motion-reduce"
                   loading="lazy"
                   width="{{ card_product.media[1].width }}"
@@ -138,11 +138,6 @@
                 class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
               >
                 {{ card_product.compare_at_price | minus: card_product.price | times: 100.0 | divided_by: card_product.compare_at_price | round }}% OFF
-                {% comment %}
-                BLACK HOURS
-                {{ card_product.compare_at_price | minus: card_product.price | times: 100.0 | divided_by: card_product.compare_at_price | round }}% OFF
-                {{- 'products.product.on_sale' | t -}}
-                {% endcomment %}
               </span>
             {%- endif -%}
           </div>
@@ -209,98 +204,82 @@
               </p>
             {%- endif -%}
             {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
-            {% assign keys = "Color,color,Colour,colour" | split: ',' %}
-            {% for key in keys %}
-            {% if card_product.options contains key %}
-            <div class="product_tile_color_holder">
-              {% for color_option in card_product.options_by_name[key].values %}
-              {% for variant in card_product.variants  %}
-              {% if variant.options contains color_option %}
-                {% if variant.image %}
-                  {% assign background_style = color_option %}
-                  {% case color_option %}
-                    {% when 'Gris' %}
-                      {% assign background_style = '#43475A' %}
-                    {% when 'Gris-Claro' %}
-                      {% assign background_style = '#c7c7c9' %}
-                    {% when 'Rojo' %}
-                      {% assign background_style = 'Crimson' %}
-                    {% when 'Negro' %}
-                      {% assign background_style = 'Black' %}
-                    {% when 'Verde-Militar' %}
-                      {% assign background_style = 'DarkOliveGreen' %}
-                    {% when 'Vinotinto' %}
-                      {% assign background_style = 'Maroon' %}
-                    {% when 'Violeta' %}
-                      {% assign background_style = 'Maroon' %}
-                    {% when 'Nude' %}
-                      {% assign background_style = '#DAC4C0' %}
-                    {% when 'Blanco' %}
-                      {% assign background_style = 'White' %}
-                    {% when 'Camel' %}
-                      {% assign background_style = 'BurlyWood' %}
-                    {% when 'Plata' %}
-                      {% assign background_style = 'SlateGray' %}
-                    {% when 'Azul' %}
-                      {% assign background_style = '#1457f5' %}
-                    {% when 'Cobre' %}
-                      {% assign background_style = 'Peru' %}
-                    {% when 'Magenta' %}
-                      {% assign background_style = '#8C2A4E' %}
-                    {% when 'Aguamarina' %}
-                      {% assign background_style = 'DarkCyan' %}
-                    {% when 'Verde-Claro' %}
-                      {% assign background_style = '#BFD1CF' %}
-                    {% when 'Beige' %}
-                      {% assign background_style = '#D8D1C8' %}
-                    {% when 'Marfil' %}
-                      {% assign background_style = '#FFFDF2' %}
-                     {% when 'Esmeralda' %}
-                      {% assign background_style = '#00554E' %}
-                     {% when 'Negro-Blanco' %}
-                      {% assign background_style = '#FFFFFF' %}
-                    {% when 'Negro-Humo' %}
-                     {% assign background_style = '#121212' %}
-                    {% when 'Rayas' %}
-                      {% assign background_style = '#2C3139' %}
-                    {% when 'Amarillo' %}
-                      {% assign background_style = '#FDED95' %}
-                    {% when 'Naranja' %}
-                      {% assign background_style = '#e06f19' %}
-                    {% when 'Azul-Claro' %}
-                      {% assign background_style = '#9db1e0' %}
-                    {% when 'Plateado' %}
-                      {% assign background_style = '#c7c7c7' %}
-                    {% when 'Terracota' %}
-                      {% assign background_style = '#ad4b1c' %}
-                    {% when 'Azul-Celeste' %}
-                      {% assign background_style = '#80daeb' %}
-                    {% when 'Chocolate' %}
-                      {% assign background_style = '#7e5a52' %}
-                    {% when 'Mocca' %}
-                      {% assign background_style = '#a6826a' %}
-                    {% when 'Azul-Cielo' %}
-                      {% assign background_style = '#87CEEB' %}
-                    {% when 'Azul' %}
-                      {% assign background_style = '#185293' %}
-                    {% when 'Gris-Oscuro' %}
-                      {% assign background_style = '#435966' %}  
-                  {% endcase %}
-                {% endif %}
-              {% endif %}
-              {% endfor %}
+            
+            {%- comment -%} COLOR SWATCHES - Usando swatches nativos de Shopify {%- endcomment -%}
+            {%- liquid
+              assign color_option = null
+              assign color_keys = "Color,color,Colour,colour" | split: ','
+              for option in card_product.options_with_values
+                for key in color_keys
+                  if option.name == key
+                    assign color_option = option
+                    break
+                  endif
+                endfor
+                if color_option != null
+                  break
+                endif
+              endfor
+            -%}
+            {%- if color_option != null -%}
+              <div class="product-card-swatches">
+                {%- for value in color_option.values -%}
+                  {%- liquid
+                    assign swatch_style = null
+                    if value.swatch.image
+                      assign image_url = value.swatch.image | image_url: width: 50
+                      assign swatch_style = 'background-image: url(' | append: image_url | append: '); background-size: cover; background-position: center;'
+                    elsif value.swatch.color
+                      assign swatch_style = 'background-color: rgb(' | append: value.swatch.color.rgb | append: ');'
+                    endif
+                  -%}
+                  {%- if swatch_style -%}
+                    <span class="product-card-swatch" style="{{ swatch_style }}" title="{{ value }}"></span>
+                  {%- else -%}
+                    <span class="product-card-swatch product-card-swatch--unavailable" title="{{ value }}"></span>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+              <style>
+                .product-card-swatches {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 6px;
+                  margin-top: 8px;
+                }
+                .product-card-swatch {
+                  width: 22px;
+                  height: 22px;
+                  border-radius: 50%;
+                  display: inline-block;
+                  border: 1px solid rgba(0,0,0,0.1);
+                  cursor: pointer;
+                  transition: transform 0.2s ease, box-shadow 0.2s ease;
+                }
+                .product-card-swatch:hover {
+                  transform: scale(1.15);
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                }
+                .product-card-swatch--unavailable {
+                  background-color: #f0f0f0;
+                  position: relative;
+                }
+                .product-card-swatch--unavailable::after {
+                  content: '';
+                  position: absolute;
+                  top: 50%;
+                  left: 0;
+                  right: 0;
+                  height: 1px;
+                  background: #ccc;
+                  transform: rotate(-45deg);
+                }
+              </style>
+            {%- endif -%}
+            {%- comment -%} FIN COLOR SWATCHES {%- endcomment -%}
 
-              <input
-                     type="radio"
-                     name="{{ card_product.id }}_card_color"
-                     id="{{ card_product.id }}_color_{{ forloop.index }}"
-                     style="background: {{ background_style }}; background-size: cover;">
-              {% endfor %}
-            </div>
-            {% endif %}
-            {% endfor %}
             {%- if card_product.quantity_price_breaks_configured? -%}
-              {% if card_product.variants.size == 1 and quick_add == 'bulk' %}
+              {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                 {% liquid
                   assign quantity_rule = card_product.selected_or_first_available_variant.quantity_rule
                   assign has_qty_rules = false
@@ -320,7 +299,7 @@
                   <span class="caption">{{ 'products.product.volume_pricing.note' | t }}</span>
                 </div>
               {% endif %}
-              {% if card_product.variants.size == 1 and quick_add == 'bulk' %}
+              {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                 <div
                   class="global-settings-popup quantity-popover__info"
                   tabindex="-1"
@@ -391,7 +370,7 @@
                 assign qty_rules = true
               endif
             -%}
-            {%- if card_product.variants.size > 1 or qty_rules -%}
+            {%- if card_product.variants_count > 1 or qty_rules -%}
               <modal-opener data-modal="#QuickAdd-{{ card_product.id }}">
                 <button
                   id="{{ product_form_id }}-submit"
@@ -483,7 +462,7 @@
             {%- endif -%}
           </div>
         {% elsif quick_add == 'bulk' %}
-          {% if card_product.variants.size == 1 %}
+          {% if card_product.variants_count == 1 %}
             <quick-add-bulk
               data-min="{{ card_product.selected_or_first_available_variant.quantity_rule.min }}"
               id="quick-add-bulk-{{ card_product.selected_or_first_available_variant.id }}-{{ section.id }}"
